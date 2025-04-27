@@ -28,6 +28,9 @@ media/
 #static/
 venv/
 .env
+# import aus legacy anwendung
+import.csv
+
 # übergang
 #migrations/
 
