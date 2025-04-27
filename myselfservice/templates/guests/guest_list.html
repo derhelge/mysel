@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 <div class="container-fluid mb-4">
@@ -205,6 +206,57 @@
             </small>
         </div>
     </div>
+</div>
 
+{% if messages %}
+    {% for message in messages %}
+        {% if message.extra_tags == 'credentials' %}
+            {% with creds=message|stringformat:"s"|split:"|" %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('modalUsername').value = "{{ creds.0 }}";
+                        document.getElementById('modalPassword').value = "{{ creds.1 }}";
+                        new bootstrap.Modal(document.getElementById('credentialsModal')).show();
+                    });
+                </script>
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="modal fade" id="credentialsModal" tabindex="-1" aria-labelledby="credentialsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="credentialsModalLabel">Zugangsdaten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Benutzername:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control font-monospace" id="modalUsername" readonly>
+                        <button class="btn btn-outline-secondary" type="button" 
+                                onclick="copyToClipboard('modalUsername')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Passwort:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control font-monospace" id="modalPassword" readonly>
+                        <button class="btn btn-outline-secondary" type="button" 
+                                onclick="copyToClipboard('modalPassword')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
