@@ -224,7 +224,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Für Entwick
 DEFAULT_FROM_EMAIL = 'noreply@example.com'
 
 
-LOGIN_URL = '/accounts/oidc/keycloak/login/'
+LOGIN_URL = f'/accounts/oidc/{SSO_PROVIDER}/login/'
 LOGIN_REDIRECT_URL = 'core:home' 
 ACCOUNT_LOGOUT_REDIRECT_URL = 'core:home'
 
