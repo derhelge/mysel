@@ -1,7 +1,7 @@
 02-users.ldif
 .env
 .env.dev
-.dev.prod
+.env.prod
 
 # IDE
 .idea/
