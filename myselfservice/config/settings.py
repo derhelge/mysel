@@ -21,11 +21,10 @@ SHIBBOLETH_SERVER_URL = env('SHIBBOLETH_SERVER_URL')
 FRC_CAPTCHA_SECRET = env('FRC_CAPTCHA_SECRET')
 FRC_CAPTCHA_SITE_KEY = env('FRC_CAPTCHA_SITE_KEY')
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','myselfservice']
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1','http://myselfservice']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost','127.0.0.1','myselfservice'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://127.0.0.1','http://myselfservice'])
 
 BASE_URL = env('BASE_URL', default='http://myselfservice:8000')
-
 # Application definition
 
 INSTALLED_APPS = [
