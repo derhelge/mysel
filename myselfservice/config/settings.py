@@ -10,10 +10,6 @@ sys.path.insert(0, str(BASE_DIR))
 
 # Environment variables
 env = environ.Env(DEBUG=(bool, False))
-env_path = BASE_DIR / '.env'
-if not env_path.exists():
-    env_path = BASE_DIR.parent / '.env'
-environ.Env.read_env(env_path)
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
@@ -184,8 +180,11 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-STATIC_ROOT = '/app/staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

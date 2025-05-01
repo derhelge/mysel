@@ -71,7 +71,10 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             # Rollen basierend auf Provider abrufen
             client_roles = self._get_roles_from_provider(extra_data, provider_id)
             logger.debug(f"Found client roles: {client_roles}")
-            
+
+            # User erst speichern
+            sociallogin.user.save()
+
             # Berechtigungen zuweisen
             for role_name in client_roles:
                 for perm_value in settings.PERMISSION_REQUIRED.values():

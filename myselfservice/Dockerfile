@@ -29,7 +29,10 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # Production Stage
 FROM base AS production
+RUN pip install gunicorn
+COPY docker-entrypoint.prod.sh /
+RUN chmod +x /docker-entrypoint.prod.sh
+ENTRYPOINT ["/docker-entrypoint.prod.sh"]
 COPY . .
-RUN python manage.py collectstatic --noinput
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "config.wsgi:application"]
 
