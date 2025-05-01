@@ -28,6 +28,8 @@ media/
 #static/
 venv/
 .env
+.env.prod
+
 # import aus legacy anwendung
 import.csv
 
