@@ -107,39 +107,43 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
-ACCOUNT_EMAIL_REQUIRED = True
+#ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET=True
 SOCIALACCOUNT_LOGOUT_ON_GET = True
 
+SSO_PROVIDER = env.str('SSO_PROVIDER', default='keycloak')
+OIDC_BASE_CONFIG = {
+    'VERIFIED_EMAIL': False,
+}
+
+PROVIDER_CONFIGS = {
+    'keycloak':{
+        "provider_id": "keycloak",
+        "name": "SSO",
+        "client_id": "django",
+        "secret": OIDC_SECRET,
+        "settings": {
+            "server_url": "http://keycloak:8080/realms/example/.well-known/openid-configuration",
+            "scope": ['openid', 'profile', 'email', 'roles'],
+        },
+    },
+    'shibboleth': {
+        "provider_id": "shibboleth",
+        "name": "SSO",
+        "client_id": SHIBBOLETH_CLIENT_ID,
+        "secret": SHIBBOLETH_OIDC_SECRET,
+        "settings": {
+            "server_url": SHIBBOLETH_SERVER_URL,
+            "scope": ['openid', 'profile', 'email', 'roles'],
+        },
+    }
+}
+
 SOCIALACCOUNT_PROVIDERS = {
     "openid_connect": {
-        # Optional PKCE defaults to False, but may be required by your provider
-        # Can be set globally, or per app (settings).
-        #"OAUTH_PKCE_ENABLED": True,
-        'VERIFIED_EMAIL': False,
-        "APPS": [
-            {
-                "provider_id": "keycloak",
-                "name": "SSO",
-                "client_id": "django",
-                "secret": OIDC_SECRET,
-                "settings": {
-                    "server_url": "http://keycloak:8080/realms/example/.well-known/openid-configuration",
-                    "scope": ['openid', 'profile', 'email', 'roles'],
-                },
-            },
-            {
-                "provider_id": "shibboleth",
-                "name": "SSO",
-                "client_id": SHIBBOLETH_CLIENT_ID,
-                "secret": SHIBBOLETH_OIDC_SECRET,
-                "settings": {
-                    "server_url": SHIBBOLETH_SERVER_URL,
-                    "scope": ['openid', 'profile', 'email', 'roles'],
-                },
-            },
-        ]
+        **OIDC_BASE_CONFIG,
+        "APPS": [PROVIDER_CONFIGS[SSO_PROVIDER]]
     }
 }
 

@@ -35,4 +35,3 @@ RUN chmod +x /docker-entrypoint.prod.sh
 ENTRYPOINT ["/docker-entrypoint.prod.sh"]
 COPY . .
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "config.wsgi:application"]
-
