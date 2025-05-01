@@ -76,6 +76,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.conf.settings", 
             ],
         },
     },
@@ -111,7 +112,7 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET=True
 SOCIALACCOUNT_LOGOUT_ON_GET = True
 
-SSO_PROVIDER = env.str('SSO_PROVIDER', default='keycloak')
+SSO_PROVIDER = env('SSO_PROVIDER', default='keycloak')
 OIDC_BASE_CONFIG = {
     'VERIFIED_EMAIL': False,
 }
