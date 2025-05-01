@@ -11,7 +11,7 @@
         Verwalten Sie hier Ihre WLAN-Zugänge und Gäste-Accounts.
       </p>
       <div class="mt-4">
-        <a href="{% url 'openid_connect_login' settings.SSO_PROVIDER %}" class="btn btn-primary btn-lg">
+        <a href="{% url 'openid_connect_login' sso_provider %}" class="btn btn-primary btn-lg">
           Login
         </a>
         <a href="{% url 'guests:create' %}" class="btn btn-outline-primary btn-lg ms-2">

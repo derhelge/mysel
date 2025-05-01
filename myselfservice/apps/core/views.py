@@ -12,6 +12,11 @@ class HomeView(TemplateView):
             return ['core/landing.html']
         return [self.template_name]
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sso_provider'] = settings.SSO_PROVIDER
+        return context
+
 # leider hat allauth kein id_token, daher nur keycloak form-logout
 # https://codeberg.org/allauth/django-allauth/issues/3694
 class CustomLogoutView(LogoutView):
