@@ -105,13 +105,15 @@ AUTHENTICATION_BACKENDS = [
     #'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
-#ACCOUNT_EMAIL_REQUIRED = True
+
+SSO_PROVIDER = env('SSO_PROVIDER', default='keycloak')
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if env('SSO_PROVIDER') == 'keycloak' else "https"
+
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET=True
 SOCIALACCOUNT_LOGOUT_ON_GET = True
 
-SSO_PROVIDER = env('SSO_PROVIDER', default='keycloak')
 OIDC_BASE_CONFIG = {
     'VERIFIED_EMAIL': False,
 }
