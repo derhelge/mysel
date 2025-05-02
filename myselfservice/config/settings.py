@@ -271,11 +271,16 @@ GUEST_SETTINGS = {
     'LIMIT_EXTEND_GUEST': 3,    # Maximum number of extensions per guest
 }
 
+GUEST_MANAGEMENT = env('PERMISSION_GROUP_GUEST_MANAGEMENT', default='GUEST_MANAGEMENT')
+EDUROAM_ACCESS= env('PERMISSION_GROUP_EDUROAM_ACCESS', default='EDUROAM_ACCESS')
+EVENTS_MANAGEMENT = env('PERMISSION_GROUP_EVENTS_MANAGEMENT', default='EVENTS_MANAGEMENT')
+EMAILDEVICE_ACCESS = env('PERMISSION_GROUP_EMAILDEVICE_ACCESS', default='EMAILDEVICE_ACCESS')
+
 PERMISSION_REQUIRED = {
-    'GUEST_MANAGEMENT': 'guests.sponsoring_access',
-    'EDUROAM_ACCESS': 'eduroam.eduroam_access',
-    'EVENTS_MANAGEMENT': 'events.events_access',
-    'EMAILDEVICE_ACCESS': 'emaildevice.emaildevice_access',
+    GUEST_MANAGEMENT: 'guests.sponsoring_access',
+    EDUROAM_ACCESS: 'eduroam.eduroam_access', 
+    EVENTS_MANAGEMENT: 'events.events_access',
+    EMAILDEVICE_ACCESS: 'emaildevice.emaildevice_access',
 }
 
 #############################
