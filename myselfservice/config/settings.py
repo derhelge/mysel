@@ -148,7 +148,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-CUSTOM_LOGOUT_OIDC = "http://keycloak:8080/realms/example/protocol/openid-connect/logout"
+CUSTOM_LOGOUT_OIDC = env('CUSTOM_LOGOUT_OIDC', default='http://keycloak:8080/realms/example/protocol/openid-connect/logout')
 
 SOCIALACCOUNT_ADAPTER = 'apps.core.adapters.CustomSocialAccountAdapter'
 
