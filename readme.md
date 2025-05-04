@@ -15,6 +15,7 @@ Dieser Proof of Concept (PoC) demonstriert eine Authentifizierungslösung für E
 - PostgreSQL (Datenbank)
 - Roundcube (Webmail-Client)
 - Dovecot/Postfix (Mailserver)
+- FreeRADIUS (für WLAN-Accounts)
 - Django (Selfservice-Portal)
 
 ## Voraussetzungen
@@ -42,11 +43,7 @@ cd docker/dev
 Das `init.sh` Script automatisiert die initiale Einrichtung:
 
 - Erstellt eine `.env` Datei aus der `env.example`
-- Ersetzt Platzhalter in verschiedenen Konfigurationsdateien mit den tatsächlichen Werten aus der `.env`
-- Konfiguriert Git so, dass sensible Dateien nicht versehentlich committed werden aber trotzdem Teil des repositories sind
-- ruft ein weiteres Script `openldap/generate_bootstrap.sh` auf um OpenLDAP zu vorzubereiten
-
-Mit dem `--reverse` Parameter können die Ersetzungen an den Konfigurationsdateien rückgängig gemacht werden. Das ist notwendig, wenn Änderungen an den Konfigurationsdateien vorgenommen werden soll und eingecheckt werden sollen.
+- ruft ein Script `openldap/generate_bootstrap.sh` auf um OpenLDAP zu vorzubereiten
 
 ### 3. Start des Systems und Nutzung
 ```bash

@@ -124,6 +124,20 @@ services:
     networks:
       - mailnet
 
+  keycloak-init:
+    image: alpine:3.19
+    volumes:
+      - keycloak_import:/import
+      - ./keycloak/import/realm-export.json.template:/import/realm-export.json.template
+    env_file:
+      - .env.dev
+    command: >
+      sh -c '
+        cp /import/realm-export.json.template /import/realm-export.json &&
+        sed -i "s/LDAP_ADMIN_PASSWORD/$${LDAP_ADMIN_PASSWORD}/g" /import/realm-export.json &&
+        sed -i "s/ROUNDCUBEMAIL_OIDC_SECRET/$${ROUNDCUBEMAIL_OIDC_SECRET}/g" /import/realm-export.json &&
+        sed -i "s/DJANGO_OIDC_SECRET/$${DJANGO_OIDC_SECRET}/g" /import/realm-export.json
+      '
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.0
     container_name: keycloak
@@ -137,10 +151,14 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./keycloak/import:/opt/keycloak/data/import
+      - keycloak_import:/opt/keycloak/data/import
     depends_on:
-      - postgres
-      - openldap
+      keycloak-init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_started
+      openldap:
+        condition: service_started
     networks:
       - mailnet
     healthcheck:
@@ -195,6 +213,7 @@ services:
       - mailnet
 
 volumes:
+  keycloak_import:
   keycloak_data:
   postgres_data:
   postgres_data_radius:

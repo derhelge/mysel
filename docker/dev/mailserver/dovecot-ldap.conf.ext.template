@@ -1,6 +1,6 @@
 hosts = openldap:389
 dn = cn=admin,dc=example,dc=org
-dnpass = LDAP_ADMIN_PASSWORD
+dnpass = ${LDAP_ADMIN_PASSWORD}
 base = ou=people,dc=example,dc=org
 
 auth_bind = yes

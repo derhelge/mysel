@@ -1,5 +1,5 @@
 driver = pgsql
-connect = host=postgres dbname=POSTGRES_DJANGO_DB user=POSTGRES_DOVECOT_USER password=POSTGRES_DOVECOT_PASSWORD
+connect = host=postgres dbname=${POSTGRES_DJANGO_DB} user=${POSTGRES_DOVECOT_USER} password=${POSTGRES_DOVECOT_PASSWORD}
 
 # unique usernames
 password_query = SELECT fqdn as username, password FROM dovecot_users WHERE login = '%u'

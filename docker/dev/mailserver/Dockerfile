@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     postfix \
     postfix-ldap \
     postfix-pgsql \
+    gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 5000 vmail \
@@ -32,11 +33,17 @@ COPY relay_domains /etc/postfix/
 RUN postmap /etc/postfix/relay_domains
 
 COPY dovecot.conf /etc/dovecot/
-COPY dovecot-ldap.conf.ext /etc/dovecot/
-COPY dovecot-sql.conf.ext /etc/dovecot/
+COPY dovecot-ldap.conf.ext.template /etc/dovecot/
+COPY dovecot-sql.conf.ext.template /etc/dovecot/
 COPY dovecot-oauth2.conf.ext /etc/dovecot/
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
 EXPOSE 25 143 465 993 995
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
