@@ -2,7 +2,7 @@
 $config['oauth_provider']='generic';
 $config['oauth_provider_name'] = 'SSO';
 $config['oauth_client_id'] = 'roundcube';
-$config['oauth_client_secret'] = 'ROUNDCUBEMAIL_OIDC_SECRET';
+$config['oauth_client_secret'] = getenv('ROUNDCUBEMAIL_OIDC_SECRET');
 $config['oauth_auth_uri'] = "http://keycloak:8080/realms/example/protocol/openid-connect/auth";
 $config['oauth_token_uri'] = "http://keycloak:8080/realms/example/protocol/openid-connect/token";
 $config['oauth_identity_uri'] = "http://keycloak:8080/realms/example/protocol/openid-connect/userinfo";

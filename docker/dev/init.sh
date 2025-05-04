@@ -7,14 +7,12 @@ files=(
   "keycloak/import/realm-export.json"
   "mailserver/dovecot-sql.conf.ext" 
   "mailserver/dovecot-ldap.conf.ext"
-  "roundcube/config/config.local.inc.php"
 )
 # Define replacements as associative arrays with target files
 declare -A replacements=(
   ["keycloak/import/realm-export.json"]="DJANGO_OIDC_SECRET LDAP_ADMIN_PASSWORD ROUNDCUBEMAIL_OIDC_SECRET"
   ["mailserver/dovecot-sql.conf.ext"]="POSTGRES_DJANGO_DB POSTGRES_DOVECOT_USER POSTGRES_DOVECOT_PASSWORD"
   ["mailserver/dovecot-ldap.conf.ext"]="LDAP_ADMIN_PASSWORD"
-  ["roundcube/config/config.local.inc.php"]="ROUNDCUBEMAIL_OIDC_SECRET"
 )
 
 # Check if --reverse flag is provided
