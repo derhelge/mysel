@@ -126,7 +126,7 @@ class TestEduroamAccount(BaseKeycloakTest):
             identity="{username}"
             anonymous_identity="anonymous"
             password="{password}"
-            ca_cert="ca.pem"
+            ca_cert="/radius_certs/ca.pem"
             phase2="auth=PAP"
         }}"""
         
@@ -139,4 +139,33 @@ class TestEduroamAccount(BaseKeycloakTest):
             shell=True, capture_output=True, text=True
         )
         os.remove("temp_eapol.conf")
+        assert result.returncode == 0
+
+class TestRadiusClientAuth:
+    def test_radius_auth(self):
+        # Decrypt key first
+        subprocess.run(
+            "openssl rsa -in /radius_certs/client.key -out /client_unencrypted.key -passin pass:whatever",
+            shell=True, check=True
+        )
+
+        config = f"""network={{
+            key_mgmt=IEEE8021X
+            eap=TLS
+            identity="test_client"
+            ca_cert="/radius_certs/ca.pem"
+            client_cert="/radius_certs/client.pem" 
+            private_key="/client_unencrypted.key"
+        }}"""
+        
+        with open("temp_eapol.conf", "w") as f:
+            f.write(config)
+        radius_ip = socket.gethostbyname('freeradius')
+
+        result = subprocess.run(
+            f"eapol_test -c temp_eapol.conf -s testing123 -a {radius_ip}",
+            shell=True, capture_output=True, text=True
+        )
+        os.remove("temp_eapol.conf")
+        os.remove("/client_unencrypted.key")
         assert result.returncode == 0
