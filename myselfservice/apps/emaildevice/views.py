@@ -12,7 +12,7 @@ import random
 
 class MailRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.has_perm(settings.PERMISSION_REQUIRED['EMAILDEVICE_ACCESS'])
+        return self.request.user.has_perm('emaildevice.emaildevice_access')
 
 class MailDeviceBaseMixin(LoginRequiredMixin, MailRequiredMixin):
     model = EmailDevice

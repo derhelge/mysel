@@ -76,20 +76,20 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             sociallogin.user.save()
 
             # Berechtigungen zuweisen
+            role_map_upper = {k.upper(): v for k, v in settings.PERMISSION_MAPPING.items()}
+
             for role_name in client_roles:
-                for perm_value in settings.PERMISSION_REQUIRED.values():
-                    app_label, codename = perm_value.split('.')
-                    
-                    if role_name == codename:
-                        try:
-                            permission = Permission.objects.get(
-                                codename=codename,
-                                content_type__app_label=app_label
-                            )
-                            sociallogin.user.user_permissions.add(permission)
-                            logger.debug(f"Added permission '{perm_value}' to user {sociallogin.user}")
-                        except Permission.DoesNotExist:
-                            logger.warning(f"Permission {perm_value} does not exist in database")
+                if role_name.upper() in role_map_upper:
+                    app_label, codename = role_map_upper[role_name.upper()].split('.')
+                    try:
+                        permission = Permission.objects.get(
+                            codename=codename,
+                            content_type__app_label=app_label
+                        )
+                        sociallogin.user.user_permissions.add(permission)
+                        logger.debug(f"Added permission '{role_map_upper[role_name.upper()]}' to user {sociallogin.user}")
+                    except Permission.DoesNotExist:
+                        logger.warning(f"Permission {role_map_upper[role_name.upper()]} does not exist")
 
         except Exception as e:
             logger.error(f"Error in pre_social_login: {str(e)}", exc_info=True)

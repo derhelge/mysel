@@ -12,7 +12,7 @@ from .utils import generate_event_pdf
 
 class EventsRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.has_perm(settings.PERMISSION_REQUIRED['EVENTS_MANAGEMENT'])
+        return self.request.user.has_perm('events.events_access')
 
 class EventsBaseMixin(LoginRequiredMixin, EventsRequiredMixin):
     model = Event

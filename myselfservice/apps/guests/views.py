@@ -18,7 +18,7 @@ from .forms import GuestForm, GuestApplicationForm
 
 class GuestRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.has_perm(settings.PERMISSION_REQUIRED['GUEST_MANAGEMENT'])
+        return self.request.user.has_perm('guests.sponsoring_access')
 
 class GuestBaseMixin(LoginRequiredMixin, GuestRequiredMixin):
     model = GuestAccount

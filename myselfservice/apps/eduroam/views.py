@@ -11,7 +11,7 @@ from apps.core.utils import generate_password
 
 class EduroamRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.has_perm(settings.PERMISSION_REQUIRED['EDUROAM_ACCESS'])
+        return self.request.user.has_perm('eduroam.eduroam_access')
 
 class EduroamBaseMixin(LoginRequiredMixin, EduroamRequiredMixin):
     model = EduroamAccount
