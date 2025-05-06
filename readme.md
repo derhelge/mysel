@@ -18,6 +18,8 @@ Dieser Proof of Concept (PoC) demonstriert eine Authentifizierungslösung für E
 - FreeRADIUS (für WLAN-Accounts)
 - Django (Selfservice-Portal)
 
+![Übersichtsdiagram](mysel.drawio.svg)
+
 ## Voraussetzungen
 - Docker und Docker Compose
 - OpenSSL (um die LDAP-Passwörter zu generieren)
