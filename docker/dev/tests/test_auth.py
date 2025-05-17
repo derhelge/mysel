@@ -115,7 +115,7 @@ class TestEduroamAccount(BaseKeycloakTest):
 
         # Test radius
         result = subprocess.run(
-            f"radtest {username} {password} freeradius 0 testing123",
+            f"radtest {username} {password} freeradius 0 testing1234",
             shell=True, capture_output=True, text=True
         )
         assert result.returncode == 0
@@ -136,7 +136,7 @@ class TestEduroamAccount(BaseKeycloakTest):
         radius_ip = socket.gethostbyname('freeradius')
 
         result = subprocess.run(
-            f"eapol_test -c temp_eapol.conf -s testing123 -a {radius_ip}",
+            f"eapol_test -c temp_eapol.conf -s testing1234 -a {radius_ip}",
             shell=True, capture_output=True, text=True
         )
         os.remove("temp_eapol.conf")
