@@ -70,37 +70,35 @@ class BaseKeycloakTest:
             allow_redirects=True
         )
 
-# class TestMailLogin(BaseKeycloakTest):
-#     def setup_method(self):
-#         self.mailserver = "mailserver" 
-#         self.test_username = "testuser2@example.org"
-#         self.test_password = "testuser2"
-#         self.verify_path = "emaildevice"
-#         super().setup_method()
+class TestMailLogin(BaseKeycloakTest):
+    def setup_method(self):
+        self.mailserver = "mailserver" 
+        self.test_username = "testuser2@example.org"
+        self.test_password = "testuser2"
+        self.verify_path = "emaildevice"
+        super().setup_method()
 
-#     def test_initial_imap_login(self):
-#         imap = imaplib.IMAP4(host=self.mailserver, port=143)
-#         imap.starttls()
-#         imap.login(self.test_username, self.test_password)
-#         imap.logout()
+    def test_initial_imap_login(self):
+        imap = imaplib.IMAP4(host=self.mailserver, port=143)
+        imap.starttls()
+        imap.login(self.test_username, self.test_password)
+        imap.logout()
 
-#     def test_create_email_device(self):
-#         response = self._get_csrf_and_post('emaildevice')
-#         username, password = self._extract_credentials(response)
+    def test_create_email_device(self):
+        response = self._get_csrf_and_post('emaildevice')
+        username, password = self._extract_credentials(response)
         
-#         # Test old credentials fail
-#         with pytest.raises(imaplib.IMAP4.error):
-#             imap = imaplib.IMAP4(self.mailserver)
-#             imap.starttls()
-#             imap.login(self.test_username, self.test_password)
+        # Test old credentials fail
+        with pytest.raises(imaplib.IMAP4.error):
+            imap = imaplib.IMAP4(self.mailserver)
+            imap.starttls()
+            imap.login(self.test_username, self.test_password)
             
-#         # Test new credentials work
-#         imap = imaplib.IMAP4(self.mailserver)
-#         imap.starttls() 
-#         imap.login(username, password)
-#         imap.logout()
-
-# import socket
+        # Test new credentials work
+        imap = imaplib.IMAP4(self.mailserver)
+        imap.starttls() 
+        imap.login(username, password)
+        imap.logout()
 
 class TestEduroamAccount(BaseKeycloakTest):
     def setup_method(self):
@@ -113,14 +111,14 @@ class TestEduroamAccount(BaseKeycloakTest):
         response = self._get_csrf_and_post('eduroam')
         username, password = self._extract_credentials(response)
 
-        # Test radius
+        # Test radius (direkt in default (nicht inner-tunnel))
         result = subprocess.run(
             f"radtest {username} {password} freeradius 0 testing1234",
             shell=True, capture_output=True, text=True
         )
         assert result.returncode == 0
 
-        # Test eapol
+        # Test EAP-TTLS
         config = f"""network={{
             key_mgmt=IEEE8021X
             eap=TTLS
@@ -150,6 +148,7 @@ class TestRadiusClientAuth:
             shell=True, check=True
         )
 
+        # Test EAP-TLS
         config = f"""network={{
             key_mgmt=IEEE8021X
             eap=TLS
