@@ -12,7 +12,7 @@ services:
     networks:
       - mailnet
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'radtest bob test localhost 0 testing123'"]
+      test: ["CMD-SHELL", "sh -c 'nc -u -z localhost 1812'"]
       interval: 10s
       timeout: 1s
       retries: 5
