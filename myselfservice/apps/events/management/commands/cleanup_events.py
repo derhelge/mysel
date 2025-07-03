@@ -1,4 +1,4 @@
-# apps/guests/management/commands/cleanup_guests.py 
+# apps/events/management/commands/cleanup_events.py
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from apps.events.models import Event

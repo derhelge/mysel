@@ -45,7 +45,7 @@ cd docker/dev
 Das `init.sh` Script automatisiert die initiale Einrichtung:
 
 - Erstellt eine `.env` Datei aus der `env.example`
-- ruft ein Script `openldap/generate_bootstrap.sh` auf um OpenLDAP zu vorzubereiten
+- ruft ein Script `openldap/generate_bootstrap.sh` auf, um OpenLDAP vorzubereiten
 
 ### 3. Start des Systems und Nutzung
 ```bash
