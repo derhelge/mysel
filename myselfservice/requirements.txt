@@ -26,7 +26,7 @@ cryptography==44.0.2
     #   pyjwt
 cssselect2==0.8.0
     # via svglib
-django==5.2
+django==5.2.2
     # via
     #   -r requirements.in
     #   crispy-bootstrap4
@@ -55,8 +55,8 @@ msal==1.32.3
     # via -r requirements.in
 oauthlib==3.2.2
     # via requests-oauthlib
-pillow==11.2.1
-    # via reportlab
+pillow==11.3.0
+    # via reportlab & updated manually
 psycopg2-binary==2.9.10
     # via -r requirements.in
 pyasn1==0.6.1
@@ -71,7 +71,7 @@ reportlab==4.4.0
     # via
     #   -r requirements.in
     #   svglib
-requests==2.32.3
+requests==2.32.4
     # via
     #   django-allauth
     #   django-friendly-captcha
@@ -87,7 +87,7 @@ tinycss2==1.4.0
     # via
     #   cssselect2
     #   svglib
-urllib3==2.4.0
+urllib3==2.5.0
     # via requests
 uvicorn==0.34.2
     # via -r requirements.in
