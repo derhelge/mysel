@@ -1,12 +1,13 @@
+# default Konfiguration aus Auslieferungszustand
+# docker compose -f docker/dev/docker-compose.dev.yml exec freeradius cat /etc/raddb/sites-available/inner-tunnel > docker/dev/freeradius/raddb/sites-available/inner-tunnel
+# grep -v -E '^[[:space:]]*(#|$)' docker/dev/freeradius/raddb/sites-available/inner-tunnel > docker/dev/freeradius/raddb/sites-enabled/inner-tunnel
 
 server inner-tunnel {
-
 listen {
        ipaddr = 127.0.0.1
        port = 18120
        type = auth
 }
-
 authorize {
 	filter_username
 	chap
@@ -21,12 +22,10 @@ authorize {
 	files
 	-sql
 	-ldap
-
 	expiration
 	logintime
 	pap
 }
-
 authenticate {
 	Auth-Type PAP {
 		pap
@@ -40,10 +39,8 @@ authenticate {
 	mschap
 	eap
 }
-
 session {
 }
-
 post-auth {
 	-sql
 	if (0) {
@@ -69,12 +66,9 @@ post-auth {
 		}
 	}
 }
-
 pre-proxy {
 }
-
 post-proxy {
 	eap
 }
-
 } # inner-tunnel server block

@@ -1,6 +1,7 @@
-
+# default Konfiguration aus Auslieferungszustand
+# docker compose -f docker/dev/docker-compose.dev.yml exec freeradius cat /etc/raddb/sites-available/default > docker/dev/freeradius/raddb/sites-available/default
+# grep -v -E '^[[:space:]]*(#|$)' docker/dev/freeradius/raddb/sites-available/default > docker/dev/freeradius/raddb/sites-enabled/default
 server default {
-
 listen {
 	type = auth
 	ipaddr = *
@@ -11,17 +12,13 @@ listen {
 	      idle_timeout = 900
 	}
 }
-
 listen {
 	ipaddr = *
 	port = 0
 	type = acct
-
 	limit {
 	}
 }
-
-
 listen {
 	type = auth
 	ipv6addr = ::	# any.  ::1 == localhost
@@ -32,16 +29,13 @@ listen {
 	      idle_timeout = 30
 	}
 }
-
 listen {
 	ipv6addr = ::
 	port = 0
 	type = acct
-
 	limit {
 	}
 }
-
 authorize {
 	filter_username
 	preprocess
@@ -62,7 +56,6 @@ authorize {
 		  ok
 	}
 }
-
 authenticate {
 	Auth-Type PAP {
 		pap
@@ -77,26 +70,21 @@ authenticate {
 	digest
 	eap
 }
-
 preacct {
 	preprocess
 	acct_unique
 	suffix
 	files
 }
-
 accounting {
 	detail
 	sql
 	exec
 	attr_filter.accounting_response
 }
-
 session {
 }
-
 post-auth {
-
 	if (session-state:User-Name && reply:User-Name && request:User-Name && (reply:User-Name == request:User-Name)) {
 		update reply {
 			&User-Name !* ANY
@@ -124,10 +112,8 @@ post-auth {
 		}
 	}
 }
-
 pre-proxy {
 }
-
 post-proxy {
 }
 }
