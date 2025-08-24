@@ -138,6 +138,9 @@ services:
         sed -i "s/ROUNDCUBEMAIL_OIDC_SECRET/$${ROUNDCUBEMAIL_OIDC_SECRET}/g" /import/realm-export.json &&
         sed -i "s/DJANGO_OIDC_SECRET/$${DJANGO_OIDC_SECRET}/g" /import/realm-export.json
       '
+    networks:
+      - mailnet
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.0
     container_name: keycloak

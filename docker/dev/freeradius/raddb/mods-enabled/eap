@@ -14,10 +14,9 @@ eap {
 	}
 	tls-config tls-common {
 		private_key_password = whatever
-		private_key_file = ${certdir}/server.pem
-		certificate_file = ${certdir}/server.pem
-		ca_file = ${cadir}/ca.pem
-		ca_path = ${cadir}
+		private_key_file = /etc/raddb/certs/radius.thga.de.key
+		certificate_file = /etc/raddb/certs/radius.thga.de-2025.pem
+		ca_file = /etc/raddb/certs/telesec-chain-without-ca.pem
 		cipher_list = "DEFAULT"
 		cipher_server_preference = no
 		tls_min_version = "1.2"
@@ -47,14 +46,5 @@ eap {
 		copy_request_to_tunnel = no
 		use_tunneled_reply = no
 		virtual_server = "inner-tunnel"
-	}
-	peap {
-		tls = tls-common
-		default_eap_type = mschapv2
-		copy_request_to_tunnel = no
-		use_tunneled_reply = no
-		virtual_server = "inner-tunnel"
-	}
-	mschapv2 {
 	}
 }

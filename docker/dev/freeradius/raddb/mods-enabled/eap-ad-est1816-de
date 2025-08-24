@@ -1,0 +1,23 @@
+# default Konfiguration aus Auslieferungszustand
+# docker compose -f docker/dev/docker-compose.dev.yml exec freeradius cat /etc/raddb/mods-available/eap > docker/dev/freeradius/raddb/mods-available/eap
+# grep -v -E '^[[:space:]]*(#|$)' docker/dev/freeradius/raddb/mods-available/eap > docker/dev/freeradius/raddb/mods-enabled/eap
+eap eap-ad-est1816-de {
+	default_eap_type = tls
+	timer_expire = 60
+	ignore_unknown_eap_types = no
+	cisco_accounting_username_bug = no
+	max_sessions = ${max_requests}
+
+	tls-config tls-ad-est1816-de {
+		private_key_file = /etc/raddb/certs/radius.ad.est1816.de-20250623.key
+		certificate_file = /etc/raddb/certs/radius.ad.est1816.de-20250623.pem
+		ca_file = /etc/raddb/certs/DMT-LB-PCA.pem
+		fragment_size = 1024
+		ocsp {
+				enable = no
+		}
+	}
+	tls {
+		tls = tls-ad-est1816-de
+	}
+}

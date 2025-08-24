@@ -1,6 +1,4 @@
-# default Konfiguration aus Auslieferungszustand
-# docker compose -f docker/dev/docker-compose.dev.yml exec freeradius cat /etc/raddb/sites-available/default > docker/dev/freeradius/raddb/sites-available/default
-# grep -v -E '^[[:space:]]*(#|$)' docker/dev/freeradius/raddb/sites-available/default > docker/dev/freeradius/raddb/sites-enabled/default
+
 server default {
 listen {
 	type = auth
@@ -39,16 +37,59 @@ listen {
 authorize {
 	filter_username
 	preprocess
-	chap
-	mschap
-	digest
-	suffix
-	eap {
-		ok = return
+
+	# SSID-spezifische Logik vor Standard-Modulen
+	# Called-Station-Id Format: AA-BB-CC-DD-EE-FF:SSID-Name
+	if (&Called-Station-Id =~ /:eduroam$/i) {
+		# Operator-Name für eduroam Federation
+		update request {
+			&Operator-Name := "1thga.de"
+		}
+		# Realm-basierte EAP-Instanz Auswahl (ad.est1816.de)
+		if (&User-Name =~ /^host\/.*\.ad\.est1816\.de$/i) {
+			eap-ad-est1816-de {
+				ok = return
+			}
+		}
+		# Realm-basierte EAP-Instanz Auswahl (tfh-bochum.de)
+		elsif (&User-Name =~ /^host\/.*\.tfh-bochum\.de$/i) {
+			eap-tfh-bochum-de {
+				ok = return
+			}
+		}
+		# Standard EAP für TTLS-PAP Benutzer
+		else {
+			eap {
+				ok = return
+			}
+		}
 	}
+	# IoT Geräte
+	elsif (&Called-Station-Id =~ /:iotdevices$/i) {
+		update request {
+			&User-Name := "%{Calling-Station-Id}"
+		}
+		sql
+		if (ok) {
+			update control {
+				&Auth-Type := Accept
+			}
+			ok = return
+		}
+	}
+	# Captive Portal
+	elsif (&Called-Station-Id =~ /:THGA$/i) {
+		sql
+		-ldap
+		if (ok) {
+			update control {
+				&Auth-Type := Accept
+			}
+			ok = return
+		}
+	}
+	suffix
 	files
-	sql
-	-ldap
 	expiration
 	logintime
 	pap
@@ -60,15 +101,14 @@ authenticate {
 	Auth-Type PAP {
 		pap
 	}
-	Auth-Type CHAP {
-		chap
+
+	# sql und ldap setzen Accept in Authorize
+	Auth-Type Accept {
+		ok  # Akzeptiere ohne weitere Prüfung
 	}
-	Auth-Type MS-CHAP {
-		mschap
-	}
-	mschap
-	digest
 	eap
+	eap-ad-est1816-de
+	eap-tfh-bochum-de
 }
 preacct {
 	preprocess
@@ -93,7 +133,50 @@ post-auth {
 	update {
 		&reply: += &session-state:
 	}
+
+	# VLAN-Zuweisung
+	if (&Called-Station-Id =~ /:eduroam$/i) {
+		update reply {
+			&Tunnel-Type := VLAN
+			&Tunnel-Medium-Type := IEEE-802
+			&Tunnel-Private-Group-Id := "144"
+		}
+		
+		# Spezielle VLANs für Computer-Accounts
+		if (&User-Name =~ /^host\/.*\.ad\.est1816\.de$/i) {
+			update reply {
+				&Tunnel-Private-Group-Id := "82"
+			}
+		}
+		elsif (&User-Name =~ /^host\/.*\.tfh-bochum\.de$/i) {
+			update reply {
+				&Tunnel-Private-Group-Id := "124"
+			}
+		}
+	}
+	elsif (&Called-Station-Id =~ /:iotdevices$/i) {
+		update reply {
+			&Tunnel-Type := VLAN
+			&Tunnel-Medium-Type := IEEE-802
+			&Tunnel-Private-Group-Id := "148"
+		}
+	}
+	elsif (&Called-Station-Id =~ /:THGA$/i) {
+		update reply {
+			&Tunnel-Type := VLAN
+			&Tunnel-Medium-Type := IEEE-802
+			&Tunnel-Private-Group-Id := "140"
+		}
+	}
+
 	sql
+    # SQL für VLAN-Override (Admin kann VLAN überschreiben)
+    if ("%{sql:SELECT vlan_id FROM vlan_override WHERE username = '%{SQL-User-Name}' LIMIT 1}") {
+        update reply {
+            &Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id::text FROM vlan_override WHERE username = '%{SQL-User-Name}' LIMIT 1}"
+        }
+    }
+    
 	exec
 	remove_reply_message_if_eap
 	Post-Auth-Type REJECT {
