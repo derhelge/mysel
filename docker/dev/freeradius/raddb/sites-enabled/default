@@ -94,6 +94,14 @@ post-auth {
 		&reply: += &session-state:
 	}
 	sql
+	
+	# SQL für VLAN-Override (Admin kann VLAN überschreiben)
+	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}") {
+		update reply {
+			&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}"
+		}
+	}
+
 	exec
 	remove_reply_message_if_eap
 	Post-Auth-Type REJECT {
