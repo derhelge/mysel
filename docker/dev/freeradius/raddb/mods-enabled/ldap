@@ -212,7 +212,7 @@ ldap {
 	#
 	user {
 		#  Where to start searching in the tree for users
-		base_dn = "${..base_dn}"
+		base_dn = "ou=Benutzer, ou=Lehre, dc=tfh-bochum, dc=de"
 
 		#  Filter for user objects, should be specific enough
 		#  to identify a single user object.
@@ -305,7 +305,7 @@ ldap {
 	#
 	group {
 		#  Where to start searching in the tree for groups
-		base_dn = "${..base_dn}"
+		base_dn = "ou=Gruppen, ou=Lehre, dc=tfh-bochum, dc=de"
 
 		#  Filter for group objects, should match all available
 		#  group objects a user might be a member of.
@@ -407,7 +407,7 @@ ldap {
 	#
 	client {
 		#   Where to start searching in the tree for clients
-		base_dn = "${..base_dn}"
+		base_dn = "ou=Rechner, ou=Lehre, dc=tfh-bochum, dc=de"
 
 		#
 		#  Filter to match client objects

@@ -248,8 +248,6 @@ PUBLICATION vlanoverride_pub;
  */
 CREATE USER radius WITH PASSWORD '${POSTGRES_RADIUS_PASSWORD}';
 
-GRANT SELECT ON vlan_override TO radius;
-
 /*
  *  The server can read the authorisation data
  *

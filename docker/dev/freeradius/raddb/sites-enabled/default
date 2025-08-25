@@ -80,7 +80,7 @@ authorize {
 	# Captive Portal
 	elsif (&Called-Station-Id =~ /:THGA$/i) {
 		sql
-		-ldap
+		#-ldap
 		if (ok) {
 			update control {
 				&Auth-Type := Accept

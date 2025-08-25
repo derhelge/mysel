@@ -21,7 +21,7 @@ authorize {
 	}
 	files
 	-sql
-	-ldap
+	#-ldap
 	expiration
 	logintime
 	pap
