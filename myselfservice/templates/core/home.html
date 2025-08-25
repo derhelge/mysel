@@ -41,6 +41,25 @@
             </div>
         </div>
         {% endif %}
+
+        {% if perms.iotdevices.iotdevice_access %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-microchip"></i> IoT-Geräte
+                    </h5>
+                    <p class="card-text">
+                        Verwalten Sie hier Ihre IoT-Gerätekonten und erstellen Sie neue Zugänge.
+                    </p>
+                    <a href="{% url 'iotdevices:list' %}" class="btn btn-primary">
+                        Zu IoT-Geräten
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         {% if perms.events.events_access %}
         <div class="col-md-4 mb-4">
             <div class="card h-100">

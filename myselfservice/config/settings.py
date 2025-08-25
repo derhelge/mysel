@@ -50,6 +50,7 @@ INSTALLED_APPS += [
     'apps.eduroam.apps.EduroamConfig',
     'apps.events.apps.EventsConfig',
     'apps.emaildevice.apps.EmailDeviceConfig',
+    'apps.iotdevices.apps.IotdevicesConfig',
 ]
 
 MIDDLEWARE = [
@@ -270,10 +271,11 @@ GUEST_SETTINGS = {
 }
 
 PERMISSION_MAPPING = {
-    env('PERMISSION_GROUP_GUEST_MANAGEMENT', default='B_MYSEL_GUEST_MANAGEMENT'): 'guests.sponsoring_access',
+    env('PERMISSION_GROUP_GUEST_ACCESS', default='B_MYSEL_GUEST_ACCESS'): 'guests.sponsoring_access',
     env('PERMISSION_GROUP_EDUROAM_ACCESS', default='B_MYSEL_EDUROAM_ACCESS'): 'eduroam.eduroam_access',
-    env('PERMISSION_GROUP_EVENTS_MANAGEMENT', default='B_MYSEL_EVENTS_MANAGEMENT'): 'events.events_access', 
+    env('PERMISSION_GROUP_EVENTS_ACCESS', default='B_MYSEL_EVENTS_ACCESS'): 'events.events_access',
     env('PERMISSION_GROUP_EMAILDEVICE_ACCESS', default='B_MYSEL_EMAILDEVICE_ACCESS'): 'emaildevice.emaildevice_access',
+    env('PERMISSION_GROUP_IOTDEVICE_ACCESS', default='B_MYSEL_IOTDEVICE_ACCESS'): 'iotdevices.iotdevice_access',
 }
 
 #############################
@@ -294,6 +296,11 @@ EMAILDEVICE_SETTINGS = {
     'PASSWORD_LENGTH': 12,
     'DEACTIVATE_LDAP_LOGIN_AFTER_CREATE': True
 }
+
+IOTDEVICE_SETTINGS = {
+    'MAX_ACCOUNTS': 20,  # Maximum number of active accounts per user
+}
+
 LDAP_MAIL_LOGIN_CONFIG = {
     'SERVER_URI': env('LDAP_MAIL_SERVER_URI'),
     'BIND_DN': env('LDAP_MAIL_BIND_DN'),
