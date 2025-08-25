@@ -10,6 +10,5 @@ if python manage.py shell -c "from django.contrib.auth import get_user_model; Us
 fi
 
 python manage.py create_dovecot_users_view
-python manage.py create_publication_eduroamaccount
-python manage.py create_publication_vlanoverride
+python manage.py setup_tbl_publications
 exec "$@"
