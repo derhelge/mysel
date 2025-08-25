@@ -50,6 +50,16 @@ where
  */
 -- create index radcheck_UserName_lower on radcheck (lower(UserName),Attribute);
 
+CREATE OR REPLACE VIEW rad_vlan_override AS
+SELECT 
+    mac_address,
+    vlan_id
+FROM vlanoverride_vlanoverride 
+WHERE 
+    status = 1
+    AND (start_date IS NULL OR start_date <= NOW())
+    AND (end_date IS NULL OR end_date >= NOW());
+
 
 /*
  * Table structure for table 'radacct'
@@ -244,6 +254,7 @@ CREATE USER radius WITH PASSWORD '${POSTGRES_RADIUS_PASSWORD}';
  *  The server can read the authorisation data
  *
  */
+GRANT SELECT ON rad_vlan_override TO radius;
 GRANT SELECT ON radcheck TO radius;
 GRANT SELECT ON radreply TO radius;
 GRANT SELECT ON radusergroup TO radius;
