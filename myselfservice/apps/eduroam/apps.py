@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from apps.core.replication import replication_registry
 
 class EduroamConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -15,3 +16,4 @@ class EduroamConfig(AppConfig):
     }
     def ready(self):
         import apps.eduroam.signals
+        replication_registry.register_table('eduroam_eduroamaccount')
