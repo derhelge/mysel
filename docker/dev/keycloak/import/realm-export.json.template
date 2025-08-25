@@ -330,6 +330,15 @@
           "clientRole": true,
           "containerId": "4b17b866-527d-4495-a8e5-3f67d4703e8f",
           "attributes": {}
+        },
+        {
+          "id": "aaaf3027-dc2b-4238-aff5-904a815a7e66",
+          "name": "iotdevice_access",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "4b17b866-527d-4495-a8e5-3f67d4703e8f",
+          "attributes": {}
         }
       ],
       "security-admin-console": [],
@@ -416,6 +425,19 @@
       "clientRoles": {
         "django": [
           "sponsoring_access"
+        ]
+      }
+    },
+    {
+      "id": "aaa2e19d-0990-4d08-9754-4e22d17300fe",
+      "name": "mysel_iotdevice_access",
+      "path": "/mysel_iotdevice_access",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "django": [
+          "iotdevice_access"
         ]
       }
     }

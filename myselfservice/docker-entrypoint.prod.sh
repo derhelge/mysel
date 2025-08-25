@@ -12,4 +12,6 @@ if python manage.py shell -c "from django.contrib.auth import get_user_model; Us
     python manage.py createsuperuser --noinput
 fi
 
+python manage.py create_publication_eduroamaccount
+python manage.py create_publication_vlanoverride
 exec "$@"

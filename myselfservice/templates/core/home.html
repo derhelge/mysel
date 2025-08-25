@@ -6,76 +6,21 @@
     <h1 class="mb-4">Dashboard</h1>
     
     <div class="row">
-        {% if perms.guests.sponsoring_access %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-users"></i> Gäste-WLAN
-                    </h5>
-                    <p class="card-text">
-                        Verwalten Sie hier Ihre Gast-Zugänge und genehmigen Sie neue Anträge.
-                    </p>
-                    <a href="{% url 'guests:list' %}" class="btn btn-primary">
-                        Zu den Gästen
-                    </a>
+        {% for item in dashboard_items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="{{ item.icon }}"></i> {{ item.title }}
+                        </h5>
+                        <p class="card-text">{{ item.description }}</p>
+                        <a href="{% url item.url_name %}" class="btn btn-primary">
+                            Zu {{ item.title }}
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endif %}
-
-        {% if perms.eduroam.eduroam_access %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-wifi"></i> Eduroam
-                    </h5>
-                    <p class="card-text">
-                        Verwalten Sie hier Ihre Eduroam-Gerätekonten und erstellen Sie neue Zugänge.
-                    </p>
-                    <a href="{% url 'eduroam:list' %}" class="btn btn-primary">
-                        Zu Eduroam
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        {% if perms.events.events_access %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-calendar"></i> Events
-                    </h5>
-                    <p class="card-text">
-                        Verwalten Sie hier Events und erstellen Sie individuelle Accounts für Events.
-                    </p>
-                    <a href="{% url 'events:list' %}" class="btn btn-primary">
-                        Zu Events
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {% if perms.emaildevice.emaildevice_access %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-envelope"></i> Mail-Accounts
-                    </h5>
-                    <p class="card-text">
-                        Verwalten Sie hier Mail-Accounts und erstellen Sie individuelle Accounts für Geräte.
-                    </p>
-                    <a href="{% url 'emaildevice:list' %}" class="btn btn-primary">
-                        Zu den Mail-Accounts
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+        {% endfor %}
     </div>
 
     {% if not perms.guests.sponsoring_access and not perms.eduroam.eduroam_access and not perms.events.events_access and not perms.emaildevice.emaildevice_access %}
