@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container-fluid mb-4">
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <h4 class="card-title">IoT-Geräte</h4>
+            <p class="card-text">Auf dieser Seite können Sie neue WLAN-Zugänge für IoT-Geräte konfigurieren und bestehende Zugangsdaten ändern. Voraussetzung für die Erstellung eines Accounts ist die MAC-Adresse des Geräts. Nachdem Sie einen neuen Account erstellt haben, können Sie das WLAN "<code>iotdevices</code>" auf den IoT-Geräten einrichten.</p>
+            <a class="mt-3" data-bs-toggle="collapse" href="#deviceManagement" role="button" aria-expanded="false" aria-controls="deviceManagement">
+                Weitere Informationen anzeigen
+            </a>
+
+            <div class="collapse" id="deviceManagement">
+                <p class="card-text mb-0">Anleitungen und weitere Informationen finden Sie im moodle Kurs <a href="https://moodle.thga.de/ITInfrastruktur#section-3" target="_blank">IT-Infrastruktur</a>.</p>
+
+                <h4 class="card-title mt-3">Gerätemanagement – eine neue Stufe Sicherheit</h4>
+                <p class="card-text">Zurzeit werden einige IoT-Geräte mit einem gemeinsamen WLAN-Zugang ausgestattet. Dies birgt jedoch Sicherheitsrisiken, da im Falle eines Angriffs auf ein Gerät auch andere Geräte gefährdet sein könnten. Außerdem ist die Zuordnung zu einem Beschäftigten nicht immer eindeutig.</p>
+                <p class="card-text">Durch die Einführung individueller WLAN-Zugangsdaten für jedes IoT-Gerät wird die Sicherheit erheblich erhöht.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title h5">Account generieren</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'iotdevices:create' %}" class="col-md-8 mx-auto">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="alert alert-info mt-3">
+                    <strong>MAC-Adresse von IoT-Geräten finden:</strong><br>
+                    <ul>
+                        <li><strong>Aufkleber/Label:</strong> Viele IoT-Geräte haben die MAC-Adresse auf einem Aufkleber oder im Batteriefach</li>
+                        <li><strong>Verpackung:</strong> Die Original-Verpackung enthält oft die MAC-Adresse</li>
+                        <li><strong>Geräte-Display:</strong> Manche Smart-Geräte zeigen die MAC in den Systemeinstellungen</li>
+                        <li><strong>Apps:</strong> Einige Geräte-Apps zeigen die MAC-Adresse in den Einstellungen an</li>
+                    </ul>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">Account erstellen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title h5 mb-0">Accounts</h2>
+        </div>
+        <div class="card-body p-0">
+            {% for account in accounts %}
+            <div class="p-3 border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0">{{ account.device_name }}</h6>
+                        <div class="text-muted small font-monospace">
+                            <i class="fas fa-microchip me-1"></i>{{ account.mac_address }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mt-3 mt-md-0">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <div class="d-flex flex-column flex-xl-row gap-2">
+                                <a href="{% url 'iotdevices:detail' account.pk %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span>Account anzeigen</span>
+                                </a>
+                                <form method="post" action="{% url 'iotdevices:update' account.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-secondary"
+                                            title="Neues Passwort generieren">
+                                        <i class="fas fa-sync me-1"></i>
+                                        <span>Passwort erneuern</span>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'iotdevices:delete' account.pk %}" class="d-flex flex-column">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-outline-danger"
+                                            name="action"
+                                            value="delete" 
+                                            title="Account löschen"
+                                            onclick="return confirm('Account wirklich löschen?')">
+                                        <i class="fas fa-trash me-1 me-xl-0"></i>
+                                        <span class="d-inline d-xl-none">Account löschen</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>              
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.extra_tags == 'credentials' %}
+            {% with creds=message|stringformat:"s"|split:"|" %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('ModalMacAddress').value = "{{ creds.0 }}";
+                        document.getElementById('modalPassword').value = "{{ creds.1 }}";
+                        document.getElementById('credentialsModalLabel').innerHTML = 'Zugangsdaten für IoT-Gerät:<br/><code>{{ creds.2 }}</code>';
+                        new bootstrap.Modal(document.getElementById('credentialsModal')).show();
+                    });
+                </script>
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="modal fade" id="credentialsModal" tabindex="-1" aria-labelledby="credentialsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="credentialsModalLabel">Zugangsdaten für IoT-Gerät</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">MAC-Adresse:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control font-monospace" id="ModalMacAddress" readonly>
+                        <button class="btn btn-outline-secondary" type="button" 
+                                onclick="copyToClipboard('ModalMacAddress')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Passwort:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control font-monospace" id="modalPassword" readonly>
+                        <button class="btn btn-outline-secondary" type="button" 
+                                onclick="copyToClipboard('modalPassword')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="alert alert-info mt-3">
+                        <p>Sie können diese Zugangsdaten jetzt verwenden, um das WLAN <code>iotdevices</code> auf Ihrem IoT-Gerät einzurichten. Die Verschlüsselung ist WPA/PSK und die IP-Adresseinstellungen werden automatisch bezogen. Weitere Informationen finden Sie im <a href="https://moodle.thga.de/ITInfrastruktur#section-3" target="_blank">moodle Kurs IT-Infrastruktur</a>.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

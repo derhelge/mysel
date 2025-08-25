@@ -12,4 +12,5 @@ urlpatterns = [
     path('eduroam/', include('apps.eduroam.urls')),
     path('events/', include('apps.events.urls')),
     path('emaildevice/', include('apps.emaildevice.urls')),
+    path('iotdevices/', include('apps.iotdevices.urls')),
 ]

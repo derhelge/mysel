@@ -31,3 +31,9 @@ objectClass: top
 objectClass: groupOfNames
 cn: mysel_sponsoring_access
 member: uid=testuser3,ou=people,dc=example,dc=org
+
+dn: cn=mysel_iotdevice_access,ou=groups,dc=example,dc=org
+objectClass: top
+objectClass: groupOfNames
+cn: mysel_iotdevice_access
+member: uid=testuser3,ou=people,dc=example,dc=org
