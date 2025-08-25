@@ -206,19 +206,6 @@ CREATE SUBSCRIPTION eduroam_sub
 CONNECTION 'host=postgres port=5432 dbname=django user=${POSTGRES_REPLICATION_USER} password=${POSTGRES_REPLICATION_PASSWORD}'
 PUBLICATION eduroam_pub;
 
-CREATE TABLE IF NOT EXISTS vlan_override (
-  id serial PRIMARY KEY,
-  username text NOT NULL,
-  ssid text,
-  vlan_id integer NOT NULL,
-  comment text
-);
-
-
-INSERT INTO vlan_override (username, ssid, vlan_id, comment) VALUES
-('admin@thga.de', 'eduroam', 82, 'Admin benötigt Zugriff auf Management-VLAN'),
-('iot-device-42', 'iotdevices', 152, 'Spezielles IoT-Gerät');
-
 /*
  * setup.sql -- PostgreSQL commands for creating the RADIUS user.
  *
