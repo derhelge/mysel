@@ -23,51 +23,14 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    {% if perms.guests.sponsoring_access %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'guests' in request.path %}active{% endif %}" 
-                           href="{% url 'guests:list' %}">
-                            <i class="fas fa-users"></i> Gäste
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% if perms.eduroam.eduroam_access %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'eduroam' in request.path %}active{% endif %}" 
-                           href="{% url 'eduroam:list' %}">
-                            <i class="fas fa-wifi"></i> Eduroam
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% if perms.iotdevices.iotdevice_access %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'iotdevices' in request.path %}active{% endif %}" 
-                           href="{% url 'iotdevices:list' %}">
-                            <i class="fas fa-microchip"></i> IoT-Geräte
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% if perms.events.events_access %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'events' in request.path %}active{% endif %}" 
-                           href="{% url 'events:list' %}">
-                           <i class="fas fa-calendar"></i> Events
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% if perms.emaildevice.emaildevice_access %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'emaildevice' in request.path %}active{% endif %}" 
-                           href="{% url 'emaildevice:list' %}">
-                           <i class="fas fa-envelope"></i> Mail-Accounts
-                        </a>
-                    </li>
-                    {% endif %}
-
+                  {% for item in nav_items %}
+                      <li class="nav-item">
+                          <a class="nav-link {% if item.app_name in request.path %}active{% endif %}" 
+                            href="{% url item.url_name %}">
+                              <i class="{{ item.icon }}"></i> {{ item.title }}
+                          </a>
+                      </li>
+                  {% endfor %}
                 </ul>
                 <ul class="navbar-nav">
                   <li class="nav-item dropdown">
