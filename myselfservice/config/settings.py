@@ -51,6 +51,7 @@ INSTALLED_APPS += [
     'apps.events.apps.EventsConfig',
     'apps.emaildevice.apps.EmailDeviceConfig',
     'apps.iotdevices.apps.IotdevicesConfig',
+    'apps.vlanoverride.apps.VlanoverrideConfig',
 ]
 
 MIDDLEWARE = [

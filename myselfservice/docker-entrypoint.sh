@@ -11,4 +11,5 @@ fi
 
 python manage.py create_dovecot_users_view
 python manage.py create_publication_eduroamaccount
+python manage.py create_publication_vlanoverride
 exec "$@"
