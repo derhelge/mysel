@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from apps.core.replication import replication_registry
 
 class IotdevicesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -13,3 +14,5 @@ class IotdevicesConfig(AppConfig):
         'description': 'Verwalten Sie hier Ihre IoT-Gerätekonten und erstellen Sie neue Zugänge.',
         'order': 30, 
     }
+    def ready(self):
+        replication_registry.register_table('iotdevices_iotdeviceaccount')
