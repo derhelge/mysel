@@ -46,8 +46,8 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         try:
             extra_data = sociallogin.account.extra_data
             provider_id = sociallogin.account.provider
-            username = sociallogin.user.username
-            
+            username = sociallogin.user.username.lower()
+
             logger.debug(f"Processing login for provider: {provider_id}")
             logger.debug(f"Extra data from social login: {extra_data}")
 

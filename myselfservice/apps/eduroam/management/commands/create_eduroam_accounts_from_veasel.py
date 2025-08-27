@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
                 # Get or create user
                 owner, _ = User.objects.get_or_create(
-                    username=row['owner_uid'],
+                    username=row['owner_uid'].lower(),
                 )
                 
                 # Create eduroam account with mapped status
