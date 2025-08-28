@@ -49,18 +49,21 @@ authorize {
 		if (&User-Name =~ /^host\/.*\.ad\.est1816\.de$/i) {
 			eap-ad-est1816-de {
 				ok = return
+				updated = return
 			}
 		}
 		# Realm-basierte EAP-Instanz Auswahl (tfh-bochum.de)
 		elsif (&User-Name =~ /^host\/.*\.tfh-bochum\.de$/i) {
 			eap-tfh-bochum-de {
 				ok = return
+				updated = return
 			}
 		}
 		# Standard EAP für TTLS-PAP Benutzer
 		else {
 			eap {
 				ok = return
+				updated = return
 			}
 		}
 	}
@@ -117,7 +120,6 @@ preacct {
 	files
 }
 accounting {
-	detail
 	sql
 	exec
 	attr_filter.accounting_response
