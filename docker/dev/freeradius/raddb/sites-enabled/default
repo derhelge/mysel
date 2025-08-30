@@ -1,50 +1,33 @@
 
 server default {
+
 listen {
 	type = auth
 	ipaddr = *
 	port = 0
-	limit {
-	      max_connections = 16
-	      lifetime = 0
-	      idle_timeout = 900
-	}
 }
+
 listen {
 	ipaddr = *
 	port = 0
 	type = acct
-	limit {
-	}
 }
-listen {
-	type = auth
-	ipv6addr = ::	# any.  ::1 == localhost
-	port = 0
-	limit {
-	      max_connections = 16
-	      lifetime = 0
-	      idle_timeout = 30
-	}
-}
-listen {
-	ipv6addr = ::
-	port = 0
-	type = acct
-	limit {
-	}
-}
+
 authorize {
+	#logging
+	if (!&session-state:) {
+		update session-state {
+			&Tmp-String-1 := "request"
+		}
+		linelog
+	}
+
 	filter_username
-	preprocess
 
 	# SSID-spezifische Logik vor Standard-Modulen
 	# Called-Station-Id Format: AA-BB-CC-DD-EE-FF:SSID-Name
 	if (&Called-Station-Id =~ /:eduroam$/i) {
-		# Operator-Name für eduroam Federation
-		update request {
-			&Operator-Name := "1thga.de"
-		}
+
 		# Realm-basierte EAP-Instanz Auswahl (ad.est1816.de)
 		if (&User-Name =~ /^host\/.*\.ad\.est1816\.de$/i) {
 			eap-ad-est1816-de {
@@ -59,31 +42,53 @@ authorize {
 				updated = return
 			}
 		}
-		# Standard EAP für TTLS-PAP Benutzer
-		else {
+		# Standard EAP für lokale TTLS-PAP Benutzer
+		elsif (&User-Name =~ /@(stud\.)?(dmt-lb|bergbaumuseum|thga)\.de$/i) {
+			split_username_nai
 			eap {
 				ok = return
 				updated = return
 			}
 		}
+		# Remote eduroam User
+		# The details of the radsecproxy servers
+		# are in proxy.conf.
+		else {
+			update {
+				control:Load-Balance-Key := &Calling-Station-ID
+				control:Proxy-To-Realm := 'radsecproxy'
+				
+				# Operator name (RFC 5580) identifies the network the 
+				# request originated from. It's not absolutely necessary
+				# but it helps with debugging.
+				request:Operator-Name := "1thga.de"
+			}
+			return
+		}
 	}
 	# IoT Geräte
 	elsif (&Called-Station-Id =~ /:iotdevices$/i) {
-		update request {
-			&User-Name := "%{Calling-Station-Id}"
-		}
-		sql
-		if (ok) {
-			update control {
-				&Auth-Type := Accept
+
+		# MAC-Auth: 12-stellige Hex-Strings  
+		if ("%{User-Name}" =~ /^[a-fA-F0-9]{12}$/) {
+			if ("%{sql:SELECT COUNT(*) FROM rad_mac_auth WHERE username = '%{User-Name}'}") {
+				update control {
+					&Auth-Type := Accept
+					&Tunnel-Password := "%{sql:SELECT tunnel_password FROM rad_mac_auth WHERE username = '%{User-Name}'}"
+				}
+				ok = return
 			}
-			ok = return
 		}
 	}
 	# Captive Portal
 	elsif (&Called-Station-Id =~ /:THGA$/i) {
-		sql
-		#-ldap
+        if ("%{sql:SELECT COUNT(*) FROM radcheck_guests WHERE Username='%{User-Name}' AND password='%{User-Password}'}") {
+            update control {
+                &Auth-Type := Accept
+            }
+            ok = return
+        }
+		#ldap
 		if (ok) {
 			update control {
 				&Auth-Type := Accept
@@ -91,20 +96,9 @@ authorize {
 			ok = return
 		}
 	}
-	suffix
-	files
-	expiration
-	logintime
-	pap
-	Autz-Type New-TLS-Connection {
-		  ok
-	}
+
 }
 authenticate {
-	Auth-Type PAP {
-		pap
-	}
-
 	# sql und ldap setzen Accept in Authorize
 	Auth-Type Accept {
 		ok  # Akzeptiere ohne weitere Prüfung
@@ -113,37 +107,24 @@ authenticate {
 	eap-ad-est1816-de
 	eap-tfh-bochum-de
 }
-preacct {
-	preprocess
-	acct_unique
-	suffix
-	files
-}
-accounting {
-	sql
-	exec
-	attr_filter.accounting_response
-}
-session {
-}
-post-auth {
-	if (session-state:User-Name && reply:User-Name && request:User-Name && (reply:User-Name == request:User-Name)) {
-		update reply {
-			&User-Name !* ANY
-		}
-	}
-	update {
-		&reply: += &session-state:
-	}
 
+pre-proxy {
+	attr_filter.pre-proxy
+}
+
+post-proxy {
+	attr_filter.post-proxy
+}
+
+post-auth {
+	update reply {
+		Tunnel-Type := VLAN
+		Tunnel-Medium-Type := IEEE-802
+	}
 	# VLAN-Zuweisung
+
 	if (&Called-Station-Id =~ /:eduroam$/i) {
-		update reply {
-			&Tunnel-Type := VLAN
-			&Tunnel-Medium-Type := IEEE-802
-			&Tunnel-Private-Group-Id := "144"
-		}
-		
+
 		# Spezielle VLANs für Computer-Accounts
 		if (&User-Name =~ /^host\/.*\.ad\.est1816\.de$/i) {
 			update reply {
@@ -155,51 +136,52 @@ post-auth {
 				&Tunnel-Private-Group-Id := "124"
 			}
 		}
+		else {
+			update reply {
+				&Tunnel-Private-Group-Id := "144"
+			}
+		}
 	}
 	elsif (&Called-Station-Id =~ /:iotdevices$/i) {
 		update reply {
-			&Tunnel-Type := VLAN
-			&Tunnel-Medium-Type := IEEE-802
 			&Tunnel-Private-Group-Id := "148"
 		}
 	}
 	elsif (&Called-Station-Id =~ /:THGA$/i) {
 		update reply {
-			&Tunnel-Type := VLAN
-			&Tunnel-Medium-Type := IEEE-802
 			&Tunnel-Private-Group-Id := "140"
 		}
 	}
-
-	sql
 	
 	# SQL für VLAN-Override (Admin kann VLAN überschreiben)
-	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}") {
+	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = UPPER(REPLACE('%{Calling-Station-Id}', '-', ':')) LIMIT 1}") {
 		update reply {
-			&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}"
+			&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = UPPER(REPLACE('%{Calling-Station-Id}', '-', ':')) LIMIT 1}"
 		}
 	}
 
-	exec
-	remove_reply_message_if_eap
-	Post-Auth-Type REJECT {
-		sql
-		attr_filter.access_reject
-		eap
-		remove_reply_message_if_eap
-	}
-	Post-Auth-Type Challenge {
-	}
-	Post-Auth-Type Client-Lost {
-	}
-	if (EAP-Key-Name && &reply:EAP-Session-Id) {
+	# inner-tunnel Usernames sind pseudonym und
+	# können nach außen übermittelt werden
+	if (&session-state:User-Name) {
 		update reply {
-			&EAP-Key-Name := &reply:EAP-Session-Id
+			User-Name := "%{session-state:User-Name}"
 		}
 	}
-}
-pre-proxy {
-}
-post-proxy {
+
+	# logging
+	update session-state {
+		&Tmp-String-1 := "accept"
+	}
+	linelog
+
+	Post-Auth-Type REJECT {
+		attr_filter.access_reject
+		
+		#logging
+		update session-state {
+			&Tmp-String-1 := "reject"
+		}
+		linelog
+	}
 }
 }

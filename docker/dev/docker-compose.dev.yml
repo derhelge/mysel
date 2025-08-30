@@ -9,6 +9,7 @@ services:
     container_name: freeradius
     volumes:
       - radius_certs:/etc/raddb/certs
+      - ./freeradius/logs:/var/log/freeradius
     networks:
       - mailnet
     healthcheck:
