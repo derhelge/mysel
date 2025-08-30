@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from apps.core.replication import replication_registry
 
 
 class GuestsConfig(AppConfig):
@@ -17,3 +18,4 @@ class GuestsConfig(AppConfig):
 
     def ready(self):
         import apps.guests.signals
+        replication_registry.register_table('guests_guestaccount')
