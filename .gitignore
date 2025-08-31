@@ -56,4 +56,3 @@ Thumbs.db
 # Project specific
 02-users.ldif
 docker/prod/
-raddb-prod/
