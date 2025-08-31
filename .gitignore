@@ -54,5 +54,4 @@ db.sqlite3
 Thumbs.db
 
 # Project specific
-02-users.ldif
-raddb-prod/
+docker/prod/freeradius/raddb/certs/
