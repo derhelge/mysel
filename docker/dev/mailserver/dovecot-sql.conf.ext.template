@@ -1,9 +1,0 @@
-driver = pgsql
-connect = host=postgres dbname=${POSTGRES_DJANGO_DB} user=${POSTGRES_DOVECOT_USER} password=${POSTGRES_DOVECOT_PASSWORD}
-
-# unique usernames
-password_query = SELECT fqdn as username, password FROM dovecot_users WHERE login = '%u'
-
-# gleicher username
-#password_query = SELECT NULL AS password, 'Y' as nopassword, fqdn AS user FROM dovecot_users WHERE fqdn = '%u' AND dbpassword = crypt('%w', dbpassword)
-

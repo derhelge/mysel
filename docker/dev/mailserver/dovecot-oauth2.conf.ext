@@ -1,5 +1,0 @@
-tokeninfo_url = http://keycloak:8080/realms/example/protocol/openid-connect/userinfo?trash=
-introspection_url = http://keycloak:8080/realms/example/protocol/openid-connect/token/introspect 
-introspection_mode = auth
-username_attribute = preferred_username
-
