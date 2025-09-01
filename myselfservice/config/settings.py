@@ -240,7 +240,7 @@ SITE_ID = 1
 #############################
 # Guest settings
 ############################
-WLAN_LOGIN_URL = 'https://wifi.example.com'  # Anpassen an tatsächliche URL
+WLAN_LOGIN_URL = env('WLAN_LOGIN_URL')  # Anpassen an tatsächliche URL
 
 ##############
 # LDAP Lookup (Falls Gastgeber noch keinen Account hat)
