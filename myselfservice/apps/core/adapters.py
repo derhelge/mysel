@@ -80,6 +80,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
             for role_name in client_roles:
                 if role_name.upper() in role_map_upper:
+                    logger.debug(f"Mapping role '{role_name}' to permission '{role_map_upper[role_name.upper()]}'")
                     app_label, codename = role_map_upper[role_name.upper()].split('.')
                     try:
                         permission = Permission.objects.get(
