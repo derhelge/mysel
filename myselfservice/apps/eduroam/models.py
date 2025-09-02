@@ -1,6 +1,7 @@
 from django.conf import settings 
 from django.db import models
 from apps.core.models import BaseAccountModel
+from django.utils.crypto import get_random_string
 
 class EduroamAccount(BaseAccountModel):
     comment = models.CharField(max_length=510, blank=True, verbose_name='Kommentar')
@@ -12,6 +13,14 @@ class EduroamAccount(BaseAccountModel):
         permissions = [
             ("eduroam_access", "Can manage eduroam accounts"),
         ]
+
+    def _generate_unique_username(self, realm):
+        """Generiert einen eindeutigen Username im Format eduXXXXX@realm"""
+        while True:
+            number = get_random_string(5, '0123456789')
+            username = f'edu{number}@{realm}'
+            if not EduroamAccount.objects.filter(username=username).exists():
+                return username
 
     @classmethod
     def check_account_limit(cls, owner):
