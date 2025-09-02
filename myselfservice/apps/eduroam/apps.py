@@ -15,5 +15,4 @@ class EduroamConfig(AppConfig):
         'order': 10, 
     }
     def ready(self):
-        import apps.eduroam.signals
         replication_registry.register_table('eduroam_eduroamaccount')
