@@ -45,8 +45,18 @@ class EduroamCreate(EduroamBaseMixin, CreateView):
 
         account = form.save(commit=False)
         account.owner = self.request.user
-        #account.username wird über signal generiert
-        account.password=generate_password()
+
+        # Realm aus Django User username ableiten
+        user_username = self.request.user.username
+        if '@' in user_username:
+            account.realm = user_username.split('@')[1]
+        else:
+            account.realm = settings.EDUROAM_SETTINGS['DEFAULT_REALM']
+
+        account.password = generate_password()
+
+        if not account.username:
+            account.username = account._generate_unique_username(account.realm)
         account.save()
         
         messages.info(
