@@ -1,10 +1,7 @@
 # apps/guests/utils.py
-import logging
 from django.conf import settings
 
 from apps.core.utils import send_mail_template
-
-logger = logging.getLogger(__name__)
 
 # apps/guests/utils.py
 def send_guest_notification(guest, action):
