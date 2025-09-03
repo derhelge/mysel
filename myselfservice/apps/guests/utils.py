@@ -1,7 +1,10 @@
 # apps/guests/utils.py
+import logging
 from django.conf import settings
 
 from apps.core.utils import send_mail_template
+
+logger = logging.getLogger(__name__)
 
 # apps/guests/utils.py
 def send_guest_notification(guest, action):
@@ -25,7 +28,7 @@ def send_guest_notification(guest, action):
             subject = 'Ihr WLAN-Zugang wurde verlängert'
         elif action == 'reactivate':
             subject = 'Ihr WLAN-Zugang wurde reaktiviert'
-            
+    logger.debug(f"mail send vorbereitet")
     send_mail_template(
         subject=subject,
         template_name=template,

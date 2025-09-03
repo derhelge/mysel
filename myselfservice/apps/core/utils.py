@@ -33,7 +33,7 @@ def send_mail_template(subject, template_name, context, recipient_list):
     """
     html_message = render_to_string(template_name, context)
     plain_message = strip_tags(html_message)
-    
+    logger.debug(f"bevor send_mail python")
     return send_mail(
         subject=subject,
         message=plain_message,
