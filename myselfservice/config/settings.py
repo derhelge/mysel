@@ -252,7 +252,7 @@ LOOKUP_LDAP_SERVERS = [
         'uri': env('LDAP_MAIL_SERVER_URI'),
         'bind_dn': env('LDAP_MAIL_BIND_DN'),
         'bind_pw': env('LDAP_MAIL_BIND_PASSWORD'),
-        'base_dn': 'dc=example,dc=org',
+        'base_dn': 'OU=Studenten,OU=Benutzer,OU=Lehre,DC=tfh-bochum,DC=de',
         'filter': '(mail={email})',
         'mail_attr': 'mail'
     },
