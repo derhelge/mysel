@@ -46,7 +46,7 @@ from abc import ABC, abstractmethod
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from ldap3 import Server, Connection, SAFE_SYNC
+from ldap3 import Server, Connection, SAFE_SYNC, SUBTREE, ALL
 import msal
 import csv
 
@@ -61,20 +61,29 @@ class LDAPValidator(EmailValidator):
         self.config = config
         
     def validate_email(self, email):
-        server = Server(self.config['uri'], use_ssl=self.config.get('use_ssl', True))
+        logger.debug(f"Validating email {email} against LDAP {self.config['uri']}")
+        server = Server(
+            self.config['uri'],
+            connect_timeout=0.25,
+            use_ssl=True
+        )
         conn = Connection(
             server,
             self.config['bind_dn'],
             self.config['bind_pw'],
-            client_strategy=SAFE_SYNC,
-            auto_bind=True
         )
+
+        if not conn.bind():
+            logger.error(f"LDAP bind failed to {self.config['uri']}.")
+            return False
         
         conn.search(
-            self.config['base_dn'],
-            self.config['filter'].format(email=email),
+            search_base=self.config['base_dn'],
+            search_scope=SUBTREE,
+            search_filter=self.config['filter'].format(email=email),
             attributes=[self.config['mail_attr']]
         )
+        logger.debug(f"LDAP search completed with {len(conn.entries)} entries.")
         return bool(conn.entries)
 
 class AzureADValidator(EmailValidator):
