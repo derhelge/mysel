@@ -254,14 +254,14 @@ LOOKUP_LDAP_SERVERS = [
         'filter': '(mail={email})',
         'mail_attr': 'mail'
     },
-#     {
-#         'uri': 'ldap://server2:389',
-#         'bind_dn': 'cn=reader,ou=users,dc=example2,dc=com', 
-#         'bind_pw': 'secret2',
-#         'base_dn': 'ou=users,dc=example2,dc=com',
-#         'filter': '(userPrincipalName={email})',
-#         'mail_attr': 'userPrincipalName'
-#     }
+    {
+        'uri': 'ldap://ad.est1816.de:389',
+        'bind_dn': 'CN=svc-ldap-mysel,OU=Dienstbenutzerkonten,DC=ad,DC=est1816,DC=de', 
+        'bind_pw': env('GUEST_LOOKUP_USER_PASSWORD'),
+        'base_dn': 'OU=Anmeldekonten,DC=ad,DC=est1816,DC=de',
+        'filter': '(mail={email})',
+        'mail_attr': 'mail'
+    }
 ]
 LOOKUP_EMAIL_FILE_CONFIG = {
     'file_path': BASE_DIR / "lookup_email.txt"
