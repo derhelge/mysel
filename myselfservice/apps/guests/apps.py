@@ -14,6 +14,3 @@ class GuestsConfig(AppConfig):
         'description': 'Verwalten Sie hier Ihre Gast-Zugänge und genehmigen Sie neue Anträge.',
         'order': 40,
     }
-
-    def ready(self):
-        import apps.guests.signals
