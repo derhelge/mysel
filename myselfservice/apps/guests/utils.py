@@ -28,7 +28,7 @@ def send_guest_notification(guest, action):
             subject = 'Ihr WLAN-Zugang wurde verlängert'
         elif action == 'reactivate':
             subject = 'Ihr WLAN-Zugang wurde reaktiviert'
-    logger.debug(f"mail send vorbereitet")
+
     send_mail_template(
         subject=subject,
         template_name=template,
