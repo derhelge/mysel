@@ -228,7 +228,7 @@ LOGGING = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "host.docker.internal"
+EMAIL_HOST = "172.17.0.1"
 DEFAULT_FROM_EMAIL = 'noreply@thga.de'
 
 
