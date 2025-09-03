@@ -227,8 +227,9 @@ LOGGING = {
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Für Entwicklung
-DEFAULT_FROM_EMAIL = 'noreply@example.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "host.docker.internal"
+DEFAULT_FROM_EMAIL = 'noreply@thga.de'
 
 
 LOGIN_URL = f'/accounts/oidc/{SSO_PROVIDER}/login/'
