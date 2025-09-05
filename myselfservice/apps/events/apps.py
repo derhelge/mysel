@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from apps.core.replication import replication_registry
 
 
 class EventsConfig(AppConfig):
@@ -14,3 +15,5 @@ class EventsConfig(AppConfig):
         'description': 'Verwalten Sie hier Events und erstellen Sie individuelle Accounts für Events.',
         'order': 50,
     }
+    def ready(self):
+        replication_registry.register_table('eduroam_eduroamaccount')

@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from apps.core.replication import replication_registry
 
 
 class GuestsConfig(AppConfig):
@@ -14,3 +15,5 @@ class GuestsConfig(AppConfig):
         'description': 'Verwalten Sie hier Ihre Gast-Zugänge und genehmigen Sie neue Anträge.',
         'order': 40,
     }
+    def ready(self):
+        replication_registry.register_table('eduroam_eduroamaccount')
