@@ -14,7 +14,7 @@ class GuestForm(forms.ModelForm):
         }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].label = "E-Mail Adresse (wird zu Username)"
+        self.fields['username'].label = "E-Mail Adresse des Gastes (wird zu Username)"
 
     def clean_username(self):
         return self.cleaned_data['username'].lower()

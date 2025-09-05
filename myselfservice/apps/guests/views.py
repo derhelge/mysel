@@ -49,12 +49,21 @@ class GuestAccountApplicateView(CreateView):
     template_name = 'guests/guest_form.html'
     form_class = GuestApplicationForm
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('guests:create')
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
-        guest = form.save(commit=False)
-        owner_email = form.cleaned_data['owner_email']
-        guest.create_pending_user(temp_owner_email=owner_email)
-        send_guest_notification(guest, 'applicate')
-        send_owner_notification(guest, owner_email)
+        try:
+            guest = form.save(commit=False)
+            owner_email = form.cleaned_data['owner_email']
+            guest.create_pending_user(temp_owner_email=owner_email)
+            send_guest_notification(guest, 'applicate')
+            send_owner_notification(guest, owner_email)
+        except Exception as e:
+            messages.error(self.request, 'Ein Fehler ist aufgetreten.')
+            return self.form_invalid(form)
         
         return render(self.request, 'guests/application_success.html', {'guest': guest})
 

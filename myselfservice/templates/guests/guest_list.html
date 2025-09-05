@@ -9,12 +9,15 @@
                 <div class="card-body">
                     <h4 class="card-title"><i class="fas fa-info-circle"></i> WLAN-Gastaccounts</h4>
                     <p class="card-text">
-                        Auf dieser Seite sehen Sie Anfragen für Gästenetz-Zugänge.
-                        Sie können damit einzelnen Gästen für bis zu vier Wochen Zugang zum WLAN geben.
+                        Auf dieser Seite können Sie WLAN-Accounts für Ihre Gäste verwalten. Sie können Anfragen annehmen oder ablehnen.  Außerdem sehen Sie eine Übersicht über alle aktiven und kürzlich abgelaufenen Gastaccounts. Sie können damit einzelnen Gästen für bis zu vier Wochen Zugang zum WLAN geben.
+                    </p>
+                    <p class="card-text">
+                        Sie können auch direkt Gast-Accounts anlegen, ohne dass eine Anfrage vorliegt.
+                        Klicken Sie dazu auf den Link <a href="{% url 'guests:create' %}">Gast-Account erstellen</a> oder unten rechts auf "Gast Account erstellen".
                     </p>
                     <hr>
                     <p class="card-text mb-0">
-                        <strong>Wichtig:</strong> Als Bürge bestätigen Sie, die Identität Ihrer Gäste geprüft zu haben.
+                        <strong>Wichtig:</strong> Als Gastgeber:in bestätigen Sie, die Identität Ihrer Gäste geprüft zu haben.
                     </p>                       
                 </div>
             </div>
@@ -24,11 +27,11 @@
                 <div class="card-body">
                     <h4 class="card-title">Wie funktionieren die WLAN-Gastaccounts?</h4>
                     <p class="card-text">
-                        Gäste können unter Angabe ihrer E-Mail-Adresse und der ihres Gastgebers einen Zugang beantragen. 
-                        Der Gastgeber wird darüber per E-Mail benachrichtigt und kann den Gast freischalten.
+                        Gäste können unter Angabe ihrer E-Mail-Adresse und der ihres Gastgebers einen Zugang beantragen. Dazu verbinden Sie sich mit dem WLAN <strong>THGA</strong> und öffnen eine beliebige Webseite. Sie werden automatisch auf die Anmeldeseite weitergeleitet. Dort ist der Link zum Antragsformular zu finden.
+                        Nachdem das Formular ausgefüllt wurde, werden Sie per E-Mail benachrichtigt und können den Gast freischalten.
                     </p>
                     <p class="card-text mb-0">
-                        Nach erfolgreicher Freischaltung kann sich der Gast mit seiner E-Mail-Adresse und seinem Passwort einloggen.
+                        Nach erfolgreicher Freischaltung kann sich der Gast mit seinen Zugangsdaten im WLAN THGA anmelden.
                     </p>
                 </div>
             </div>
@@ -97,7 +100,9 @@
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h2 class="h5 m-0"><i class="fas fa-user-check me-2"></i>Aktive Gastaccounts</h2>
-            <a href="{% url 'guests:create' %}">Gast-Account erstellen</a>
+            <a href="{% url 'guests:create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Gast-Account erstellen
+            </a>
         </div>
         <div class="card-body p-0">
             {% for guest in active_guests %}
@@ -252,6 +257,7 @@
                         </button>
                     </div>
                 </div>
+                Teilen Sie diese Zugangsdaten jetzt mit Ihrem Gast, damit dieser sich im WLAN <strong>THGA</strong> anmelden kann. Die Zugangsdaten werden aus Sicherheitsgründen nur einmalig angezeigt. Ihr Gast erhält diese Daten auch per E-Mail, sofern Sie eine gültige E-Mail-Adresse angegeben haben.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
