@@ -33,6 +33,10 @@
                     <p class="card-text mb-0">
                         Nach erfolgreicher Freischaltung kann sich der Gast mit seinen Zugangsdaten im WLAN THGA anmelden.
                     </p>
+
+                        {% if user.is_authenticated %}
+                            <p class="card-text mt-2">Sollten Sie mehr als 5 WLAN-Gast-Accounts gleichzeitig benötigen, nutzen Sie bitte das <a href="{% url 'guests:create' %}">Events-Modul</a>, um WLAN-Gastaccounts für Ihre Veranstaltung zu erstellen.</p>
+                        {% endif %}
                 </div>
             </div>
         </div>
