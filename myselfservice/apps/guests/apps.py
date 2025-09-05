@@ -16,4 +16,4 @@ class GuestsConfig(AppConfig):
         'order': 40,
     }
     def ready(self):
-        replication_registry.register_table('eduroam_eduroamaccount')
+        replication_registry.register_table('guests_guestaccount')

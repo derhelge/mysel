@@ -16,4 +16,4 @@ class EventsConfig(AppConfig):
         'order': 50,
     }
     def ready(self):
-        replication_registry.register_table('eduroam_eduroamaccount')
+        replication_registry.register_table('events_eventguest')
