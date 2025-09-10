@@ -17,3 +17,4 @@ class EventsConfig(AppConfig):
     }
     def ready(self):
         replication_registry.register_table('events_eventguest')
+        import apps.events.signals

@@ -4,10 +4,34 @@ import string
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.html import strip_tags
 import logging
 
 logger = logging.getLogger(__name__)
+
+def send_admin_notification(obj, action):
+    """Benachrichtigt alle Superuser per E-Mail"""
+    User = get_user_model()
+    superuser_emails = User.objects.filter(
+        is_superuser=True, 
+        email__isnull=False
+    ).exclude(email='').values_list('email', flat=True)
+    
+    if not superuser_emails:
+        return
+    
+    model_name = obj._meta.verbose_name
+    subject = f"[Django] {model_name} {action}"
+    message = f"{model_name} wurde {action}:\n\n{obj}"
+    
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=list(superuser_emails),
+        fail_silently=True
+    )
 
 def generate_password(length=7):
     """Generiert ein sicheres Passwort ohne verwechselbare Zeichen."""
@@ -39,7 +63,8 @@ def send_mail_template(subject, template_name, context, recipient_list):
         message=plain_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=recipient_list,
-        html_message=html_message
+        html_message=html_message,
+        fail_silently=True,
     )
 
 from abc import ABC, abstractmethod
