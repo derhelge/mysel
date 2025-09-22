@@ -47,9 +47,15 @@ class EventUpdateView(EventsBaseMixin, UpdateView):
     form_class = EventForm
     template_name = 'events/event_form.html'
 
+
     def form_valid(self, form):
-        messages.success(self.request, 'Veranstaltung erfolgreich aktualisiert')
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        
+        # Accounts mit Event synchronisieren
+        self.object.update_guests()
+        messages.success(self.request, 'Veranstaltung und Accounts erfolgreich aktualisiert')
+        
+        return response
 
 class EventDetailView(EventsBaseMixin, DetailView):
     template_name = 'events/event_detail.html'
