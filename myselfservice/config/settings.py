@@ -55,6 +55,7 @@ INSTALLED_APPS += [
     'apps.events.apps.EventsConfig',
     'apps.emaildevice.apps.EmailDeviceConfig',
     'apps.iotdevices.apps.IotdevicesConfig',
+    'apps.fwconfig.apps.FwconfigConfig',
     'apps.vlanoverride.apps.VlanoverrideConfig',
 ]
 
@@ -283,6 +284,7 @@ PERMISSION_MAPPING = {
     env('PERMISSION_GROUP_EVENTS_ACCESS', default='B_MYSEL_EVENTS_ACCESS'): 'events.events_access',
     env('PERMISSION_GROUP_EMAILDEVICE_ACCESS', default='B_MYSEL_EMAILDEVICE_ACCESS'): 'emaildevice.emaildevice_access',
     env('PERMISSION_GROUP_IOTDEVICE_ACCESS', default='B_MYSEL_IOTDEVICE_ACCESS'): 'iotdevices.iotdevice_access',
+    env('PERMISSION_GROUP_FWCONFIG_ACCESS', default='B_MYSEL_FWCONFIG_ACCESS'): 'fwconfig.fwconfig_access',
 }
 
 #############################
@@ -314,3 +316,10 @@ LDAP_MAIL_LOGIN_CONFIG = {
     'BIND_PASSWORD': env('LDAP_MAIL_BIND_PASSWORD'),
     'USER_BASE_DN': env('LDAP_MAIL_USER_BASE_DN'),
 }
+
+FIREWALL_API_KEY= env('FIREWALL_API_KEY', default='')
+FIREWALL_API_SECRET= env('FIREWALL_API_SECRET', default='')
+FIREWALL_REMOTE_URI= env('FIREWALL_REMOTE_URI', default='')
+
+# Verwende Fake Firewall in DEV (kann über Umgebungsvariable überschrieben werden)
+USE_FAKE_FIREWALL = env.bool('USE_FAKE_FIREWALL', default=DEBUG)
