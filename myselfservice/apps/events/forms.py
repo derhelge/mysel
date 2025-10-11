@@ -18,3 +18,9 @@ class EventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['nameprefix'].help_text = "Die generierten Usernamen werden aus diesem Prefix und einer Nummer bestehen"
         self.fields['contact'].help_text ="Geben Sie die Email-Adresse für einen Ansprechpartner für diese Veranstaltung an"
+        # Bei Updates (wenn instance vorhanden ist) das number-Feld readonly machen
+        if self.instance and self.instance.pk:
+            self.fields['number'].widget.attrs['readonly'] = True
+            self.fields['nameprefix'].widget.attrs['readonly'] = True
+            self.fields['number'].help_text = "Die Useranzahl kann bei bestehenden Events nicht mehr geändert werden"
+            self.fields['nameprefix'].help_text = "Die Usernamen können bei bestehenden Events nicht mehr geändert werden"

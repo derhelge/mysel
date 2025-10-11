@@ -77,9 +77,11 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
             # Berechtigungen zuweisen
             role_map_upper = {k.upper(): v for k, v in settings.PERMISSION_MAPPING.items()}
-
+            logger.debug(f"Permission mapping: {role_map_upper}")
+            
             for role_name in client_roles:
                 if role_name.upper() in role_map_upper:
+                    logger.debug(f"Mapping role '{role_name}' to permission '{role_map_upper[role_name.upper()]}'")
                     app_label, codename = role_map_upper[role_name.upper()].split('.')
                     try:
                         permission = Permission.objects.get(

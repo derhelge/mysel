@@ -5,6 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ event.name }}</h1>
         <div>
+            <a href="{% url 'events:pdf' event.pk %}" class="btn btn-outline-secondary"><i class="fas fa-file-pdf me-1"></i> PDF</a>
             <a href="{% url 'events:edit' event.pk %}" class="btn btn-outline-primary">Bearbeiten</a>
             <a href="{% url 'events:list' %}" class="btn btn-outline-secondary">Zurück</a>
         </div>

@@ -22,8 +22,10 @@ class Command(BaseCommand):
                 logger.info(f'{pub_name} already exists')
             else:
                 table_list = ', '.join(tables)
+                logger.debug(f"CREATE PUBLICATION {pub_name} FOR TABLE {table_list};")
                 cursor.execute(f"CREATE PUBLICATION {pub_name} FOR TABLE {table_list};")
                 for table in tables:
+                    logger.debug(f"GRANT ALL ON {table} TO {settings.POSTGRES_REPLICATION_USER};")
                     cursor.execute(f"GRANT ALL ON {table} TO {settings.POSTGRES_REPLICATION_USER};")
                 logger.info(f'Created {pub_name} for tables: {table_list}')
 

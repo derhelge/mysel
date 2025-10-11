@@ -13,4 +13,5 @@ urlpatterns = [
     path('events/', include('apps.events.urls')),
     path('emaildevice/', include('apps.emaildevice.urls')),
     path('iotdevices/', include('apps.iotdevices.urls')),
+    path('fwconfig/', include('apps.fwconfig.urls')),
 ]

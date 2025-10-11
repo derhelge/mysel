@@ -4,10 +4,33 @@ import string
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.html import strip_tags
 import logging
 
 logger = logging.getLogger(__name__)
+
+def send_admin_notification(obj, action):
+    """Benachrichtigt alle Superuser per E-Mail"""
+    User = get_user_model()
+    superuser_emails = User.objects.filter(
+        is_superuser=True, 
+        email__isnull=False
+    ).exclude(email='').values_list('email', flat=True)
+    
+    if not superuser_emails:
+        return
+    
+    model_name = obj._meta.verbose_name
+    subject = f"[Django] {model_name} {action}"
+    message = f"{model_name} wurde {action}:\n\n{obj}"
+    
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=list(superuser_emails),
+    )
 
 def generate_password(length=7):
     """Generiert ein sicheres Passwort ohne verwechselbare Zeichen."""
@@ -46,7 +69,7 @@ from abc import ABC, abstractmethod
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from ldap3 import Server, Connection, SAFE_SYNC
+from ldap3 import Server, Connection, SAFE_SYNC, SUBTREE, ALL
 import msal
 import csv
 
@@ -61,20 +84,29 @@ class LDAPValidator(EmailValidator):
         self.config = config
         
     def validate_email(self, email):
-        server = Server(self.config['uri'], use_ssl=self.config.get('use_ssl', True))
+        logger.debug(f"Validating email {email} against LDAP {self.config['uri']}")
+        server = Server(
+            self.config['uri'],
+            connect_timeout=0.25,
+            use_ssl=True
+        )
         conn = Connection(
             server,
             self.config['bind_dn'],
             self.config['bind_pw'],
-            client_strategy=SAFE_SYNC,
-            auto_bind=True
         )
+
+        if not conn.bind():
+            logger.error(f"LDAP bind failed to {self.config['uri']}.")
+            return False
         
         conn.search(
-            self.config['base_dn'],
-            self.config['filter'].format(email=email),
+            search_base=self.config['base_dn'],
+            search_scope=SUBTREE,
+            search_filter=self.config['filter'].format(email=email),
             attributes=[self.config['mail_attr']]
         )
+        logger.debug(f"LDAP search completed with {len(conn.entries)} entries.")
         return bool(conn.entries)
 
 class AzureADValidator(EmailValidator):

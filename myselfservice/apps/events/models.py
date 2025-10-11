@@ -61,11 +61,7 @@ class Event(BaseModel):
         ],
         verbose_name='Anzahl Accounts'
     )
-    duration = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name='Gültigkeit in Tagen'
-    )
+
     nameprefix = models.CharField(
         max_length=32,
         unique=True,
@@ -119,6 +115,17 @@ class Event(BaseModel):
         self.guests.all().update(status=self.Status.DELETED)
         self.save()
 
+    def update_guests(self):
+        """Synchronisiert alle EventGuest-Accounts mit aktuellen Event-Daten"""
+
+        update_fields = {
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'status': self.status
+        }
+        
+        self.guests.all().update(**update_fields)
+
     def generate_accounts(self):
         """Generiert die Accounts für die Veranstaltung"""
         if self.guests.count() > 0:
@@ -158,10 +165,3 @@ class EventGuest(BaseAccountModel):
         ordering = ['-created_at']
         verbose_name = 'Veranstaltungsgast'
         verbose_name_plural = 'Veranstaltungsgäste'
-
-    def save(self, *args, **kwargs):
-        if not self.start_date:
-            self.start_date = timezone.now()
-        if not self.end_date and self.event.duration:
-            self.end_date = self.start_date + timezone.timedelta(days=self.event.duration)
-        super().save(*args, **kwargs)

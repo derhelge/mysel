@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mb-4">
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <h4 class="card-title">Firewall Konfiguration</h4>
+            <p class="card-text">Auf dieser Seite kannst du Firewall-Regeln für verschiedene Räume ein- und ausschalten. Alle Änderungen werden protokolliert und sind unten in der Historie sichtbar.</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title h5 mb-0">Firewall-Regeln</h2>
+        </div>
+        <div class="card-body p-0">
+            {% for rule in firewall_rules %}
+            <div class="p-3 border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-1">{{ rule.name }}</h6>
+                        <div class="text-muted small">
+                            <i class="fas fa-door-open me-1"></i>{{ rule.description }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            Status:&nbsp;
+                            {% if rule.remote_rule_status %}
+                                <span class="badge bg-success me-2">aktiv</span>
+                            {% else %}
+                                <span class="badge bg-secondary me-2">inaktiv</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex justify-content-end">
+                            <form method="post" action="{% url 'fwconfig:toggle' rule.pk %}">
+                                {% csrf_token %}
+                                {% if rule.remote_rule_status %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger"
+                                            title="Regel ausschalten"
+                                            onclick="return confirm('Regel {{ rule.name }} wirklich ausschalten?')">
+                                        <i class="fas fa-power-off me-1"></i>
+                                        Ausschalten
+                                    </button>
+                                {% else %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-success"
+                                            title="Regel einschalten"
+                                            onclick="return confirm('Regel {{ rule.name }} wirklich einschalten?')">
+                                        <i class="fas fa-power-off me-1"></i>
+                                        Einschalten
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-3 text-muted text-center">
+                <i class="fas fa-info-circle me-1"></i>
+                Keine Firewall-Regeln vorhanden.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title h5 mb-0">Letzte Änderungen</h2>
+        </div>
+        <div class="card-body p-0">
+            {% for change in recent_changes %}
+            <div class="p-3 border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="small text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ change.created_at|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small">
+                            <i class="fas fa-door-open me-1"></i>
+                            {{ change.firewall_rule.name }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small">
+                            {% if change.action == 'enabled' %}
+                                <span class="badge bg-success">{{ change.get_action_display }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ change.get_action_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="small text-muted">
+                            <i class="fas fa-user me-1"></i>
+                            {{ change.user.get_full_name|default:change.user.email }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-3 text-muted text-center">
+                <i class="fas fa-info-circle me-1"></i>
+                Noch keine Änderungen vorhanden.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

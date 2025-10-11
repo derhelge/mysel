@@ -68,11 +68,11 @@ def generate_event_pdf(event):
     guests = sorted(event.guests.all(), key=lambda x: x.username)
     data = []
 
-    table_header = ['Benutzer', 'Passwort', 'Name', 'Unterschrift']
+    table_header = ['Benutzer', 'Name', 'Unterschrift']
     data.append(table_header)
     for guest in guests:
-        data.append([guest.username, guest.password])
-    table = Table(data, colWidths=[6*cm,2*cm,4*cm,4*cm])
+        data.append([guest.username])
+    table = Table(data, colWidths=[6*cm,6*cm,6*cm])
 
     table.setStyle(TableStyle([
         ('FONT', (0, 0), (-1, -1), 'Courier'),
