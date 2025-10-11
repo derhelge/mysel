@@ -67,6 +67,21 @@ class RealFirewallService:
                 (not enabled and data.get('result') == 'Disabled')
             )
             
+            if success:
+                # Apply the changes to the firewall
+                apply_response = requests.post(
+                    f"{self.remote_uri}/api/firewall/filter/apply",
+                    auth=(self.api_key, self.api_secret),
+                    verify=certifi.where(),
+                    timeout=10
+                )
+                apply_response.raise_for_status()
+                apply_data = apply_response.json()
+                
+                if apply_data.get('status') != 'OK\n\n':
+                    logger.error(f"Fehler beim Anwenden der Firewall-Änderungen: {apply_data}")
+                    return False, "Fehler beim Anwenden der Änderungen"
+            
             action = "eingeschaltet" if enabled else "ausgeschaltet"
             message = f"Regel erfolgreich {action}" if success else f"Fehler beim {action.replace('t', 'ten')} der Regel"
             
