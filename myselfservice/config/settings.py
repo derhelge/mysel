@@ -236,6 +236,9 @@ LOGIN_URL = f'/accounts/oidc/{SSO_PROVIDER}/login/'
 LOGIN_REDIRECT_URL = 'core:home' 
 ACCOUNT_LOGOUT_REDIRECT_URL = 'core:home'
 
+# Asset loading strategy
+USE_CDN = env.bool('USE_CDN', default=True)  # master uses CDN, staging/prod uses local
+
 # AllAuth Settings
 
 SITE_ID = 1
