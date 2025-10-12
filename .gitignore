@@ -56,3 +56,8 @@ Thumbs.db
 # Project specific
 02-users.ldif
 docker/prod/
+docker/dev/freeradius/raddb/certs/
+
+# Static assets strategy for master (CDN-based)
+myselfservice/static/bootstrap/
+myselfservice/static/fontawesome/
