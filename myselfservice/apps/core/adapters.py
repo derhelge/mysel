@@ -16,7 +16,8 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         Extrahiert Rollen basierend auf dem Provider
         """
         if provider_id == "keycloak":
-            resource_access = extra_data.get('resource_access', {})
+            userinfo = extra_data.get('userinfo', {})
+            resource_access = userinfo.get('resource_access', {})
             client_access = resource_access.get('django', {})
             return client_access.get('roles', [])
         elif provider_id == "shibboleth":
@@ -28,10 +29,11 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         Extrahiert Benutzerinformationen basierend auf dem Provider
         """
         if provider_id == "keycloak":
+            userinfo = extra_data.get('userinfo', {})
             return {
-                'first_name': extra_data.get('given_name', ''),
-                'last_name': extra_data.get('family_name', ''),
-                'email': extra_data.get('email', ''),
+                'first_name': userinfo.get('given_name', ''),
+                'last_name': userinfo.get('family_name', ''),
+                'email': userinfo.get('email', ''),
             }
         elif provider_id == "shibboleth":
             name_parts = extra_data.get('name', '').split()
