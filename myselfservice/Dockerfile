@@ -8,6 +8,10 @@ ENV PYTHONUNBUFFERED=1 \
 # System-Dependencies und Build-Tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    build-essential \
+    libcairo2-dev \
+    libgirepository1.0-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Pip upgraden und grundlegende Build-Tools installieren
