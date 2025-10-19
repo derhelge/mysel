@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
     "crispy_forms",
-    "crispy_bootstrap4",
+    "crispy_bootstrap5",
     "friendly_captcha",
 ]
 
@@ -226,7 +226,8 @@ LOGGING = {
 }
 
 # Crispy Forms
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Für Entwicklung
 DEFAULT_FROM_EMAIL = 'noreply@example.com'

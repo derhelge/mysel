@@ -4,7 +4,7 @@ psycopg2-binary
 django-environ
 django-crispy-forms
 django-friendly-captcha
-crispy-bootstrap4
+crispy-bootstrap5
 ldap3
 reportlab
 svglib
