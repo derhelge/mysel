@@ -21,26 +21,20 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             client_access = resource_access.get('django', {})
             return client_access.get('roles', [])
         elif provider_id == "shibboleth":
-            return extra_data.get('roles', [])
+            userinfo = extra_data.get('userinfo', {})
+            return userinfo.get('roles', [])
         return []
 
     def _get_user_info(self, extra_data, provider_id):
         """
         Extrahiert Benutzerinformationen basierend auf dem Provider
         """
-        if provider_id == "keycloak":
+        if provider_id in ["keycloak", "shibboleth"]:
             userinfo = extra_data.get('userinfo', {})
             return {
                 'first_name': userinfo.get('given_name', ''),
                 'last_name': userinfo.get('family_name', ''),
                 'email': userinfo.get('email', ''),
-            }
-        elif provider_id == "shibboleth":
-            name_parts = extra_data.get('name', '').split()
-            return {
-                'first_name': name_parts[0] if name_parts else '',
-                'last_name': ' '.join(name_parts[1:]) if len(name_parts) > 1 else '',
-                'email': extra_data.get('email', ''),
             }
         return {}
 
