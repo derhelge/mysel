@@ -95,11 +95,17 @@ post-auth {
 	}
 	sql
 	
-	# SQL für VLAN-Override (Admin kann VLAN überschreiben)
-	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}") {
-		update reply {
-			&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = '%{Calling-Station-Id}' LIMIT 1}"
-		}
+	# SQL für VLAN-Override (Admin kann VLAN überschreiben für bestimmte MAC-Adressen oder WLAN-Benutzernamen)
+	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = UPPER(REPLACE('%{Calling-Station-Id}', '-', ':')) LIMIT 1}") {
+			update reply {
+					&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE mac_address = UPPER(REPLACE('%{Calling-Station-Id}', '-', ':')) LIMIT 1}"
+			}
+	}
+
+	if ("%{sql:SELECT vlan_id FROM rad_vlan_override WHERE wifi_username = '%{reply:User-Name}' LIMIT 1}") {
+			update reply {
+					&Tunnel-Private-Group-Id := "%{sql:SELECT vlan_id FROM rad_vlan_override WHERE wifi_username = '%{reply:User-Name}' LIMIT 1}"
+			}
 	}
 
 	exec

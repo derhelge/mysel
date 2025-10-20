@@ -11,8 +11,17 @@ class VlanOverride(BaseAccountModel):
     mac_address = models.CharField(
         max_length=17, 
         unique=False,
+        blank=True,
+        null=True,
         verbose_name='MAC-Adresse'
         )
+    
+    wifi_username = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='WLAN-Benutzername'
+    )
     
     vlan_id = models.IntegerField(
         verbose_name='VLAN-ID',
@@ -29,6 +38,8 @@ class VlanOverride(BaseAccountModel):
     
     def clean(self):
         super().clean()
+        if not self.mac_address and not self.wifi_username:
+            raise ValidationError('MAC-Adresse oder WLAN-Benutzername muss angegeben werden.')
         if self.mac_address:
             clean = re.sub(r'[^0-9A-F]', '', self.mac_address.upper())
             if len(clean) != 12:

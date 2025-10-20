@@ -31,9 +31,10 @@ CREATE TABLE public.vlanoverride_vlanoverride (
 	status int4 NOT NULL,
 	start_date timestamptz NULL,
 	end_date timestamptz NULL,
-	mac_address varchar(17) NOT NULL,
+	mac_address varchar(17) NULL,
 	vlan_id int4 NOT NULL,
 	"comment" varchar(510) NOT NULL,
+	wifi_username varchar(255) NULL,
 	CONSTRAINT vlanoverride_vlanoverride_pkey PRIMARY KEY (id)
 );
 
@@ -110,6 +111,7 @@ where
 CREATE OR REPLACE VIEW rad_vlan_override AS
 SELECT 
     mac_address,
+	wifi_username,
     vlan_id
 FROM vlanoverride_vlanoverride 
 WHERE 
