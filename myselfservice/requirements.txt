@@ -90,7 +90,7 @@ tinycss2==1.4.0
     # via
     #   cssselect2
     #   svglib
-urllib3==2.6.0
+urllib3==2.6.3
     # via requests
 uvicorn==0.38.0
     # via -r requirements.in
