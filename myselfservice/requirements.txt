@@ -61,7 +61,7 @@ pillow==12.0.0
     # via reportlab
 psycopg2-binary==2.9.11
     # via -r requirements.in
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via ldap3
 pycairo==1.29.0
     # via rlpycairo
