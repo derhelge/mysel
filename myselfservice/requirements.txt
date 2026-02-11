@@ -20,7 +20,7 @@ click==8.3.1
     # via uvicorn
 crispy-bootstrap5==2025.6
     # via -r requirements.in
-cryptography==46.0.4
+cryptography==46.0.5
     # via
     #   msal
     #   pyjwt
