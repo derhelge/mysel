@@ -87,7 +87,7 @@ class LDAPValidator(EmailValidator):
         logger.debug(f"Validating email {email} against LDAP {self.config['uri']}")
         server = Server(
             self.config['uri'],
-            connect_timeout=0.25,
+            connect_timeout=1,
             use_ssl=True
         )
         conn = Connection(
