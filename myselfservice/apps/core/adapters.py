@@ -5,6 +5,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def link_pending_guest_accounts(user):
+    """
+    Verknüpft pending Gast-Accounts mit dem User, wenn temp_owner_email übereinstimmt
+    """
+    try:
+        from apps.guests.models import GuestAccount
+        pending_guests = GuestAccount.objects.filter(
+            temp_owner_email=user.email,
+            owner__isnull=True,
+            status=GuestAccount.Status.PENDING
+        )
+        
+        count = pending_guests.count()
+        if count > 0:
+            pending_guests.update(owner=user, temp_owner_email=None)
+            logger.info(f"Linked {count} pending guest account(s) to user {user.email}")
+    except Exception as e:
+        logger.error(f"Error linking pending guest accounts for {user.email}: {str(e)}", exc_info=True)
+
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
@@ -88,6 +107,9 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
                         logger.debug(f"Added permission '{role_map_upper[role_name.upper()]}' to user {sociallogin.user}")
                     except Permission.DoesNotExist:
                         logger.warning(f"Permission {role_map_upper[role_name.upper()]} does not exist")
+
+            # Verknüpfe pending Gast-Accounts beim Login
+            link_pending_guest_accounts(sociallogin.user)
 
         except Exception as e:
             logger.error(f"Error in pre_social_login: {str(e)}", exc_info=True)

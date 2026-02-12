@@ -25,7 +25,9 @@ class GuestBaseMixin(LoginRequiredMixin, GuestRequiredMixin):
     success_url = reverse_lazy('guests:list')
 
     def get_queryset(self):
-        return GuestAccount.objects.filter(owner=self.request.user)
+        return GuestAccount.objects.filter(
+            Q(owner=self.request.user) | Q(temp_owner_email=self.request.user.email)
+        )
     
 class GuestAccountCreateView(GuestBaseMixin, CreateView):
     template_name = 'guests/guest_form.html'
@@ -72,6 +74,12 @@ class GuestAccountApproveView(GuestBaseMixin, View):
         guest = self.get_queryset().get(pk=self.kwargs['pk'])
 
         try:
+            # Setze den Owner, falls er noch nicht gesetzt ist (temp_owner_email Szenario)
+            if guest.owner is None and guest.temp_owner_email == request.user.email:
+                guest.owner = request.user
+                guest.temp_owner_email = None
+                guest.save()
+            
             guest.activate()
             send_guest_notification(guest,'approve')
             messages.success(self.request, f'Gast {guest.name} wurde aktiviert.')
