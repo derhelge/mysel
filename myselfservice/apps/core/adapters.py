@@ -50,10 +50,11 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         """
         if provider_id in ["keycloak", "shibboleth"]:
             userinfo = extra_data.get('userinfo', {})
+            email = userinfo.get('email', '')
             return {
                 'first_name': userinfo.get('given_name', ''),
                 'last_name': userinfo.get('family_name', ''),
-                'email': userinfo.get('email', ''),
+                'email': email.lower() if email else '',
             }
         return {}
 
