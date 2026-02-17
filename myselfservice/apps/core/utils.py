@@ -146,44 +146,58 @@ class MultiSourceValidator:
     def get_validators(self):
         validators = []
         
-        # LDAP Validator(s)
+        # Django User DB (fastest - in-memory/database)
+        if getattr(settings, 'LOOKUP_DJANGO_USERS', True):
+            validators.append(DjangoUserValidator())
+        
+        # Text file (fast - local file read)
+        if hasattr(settings, 'LOOKUP_EMAIL_FILE_CONFIG'):
+            validators.append(TextFileValidator(settings.LOOKUP_EMAIL_FILE_CONFIG))
+        
+        # LDAP Validator(s) (slower - network calls)
         if hasattr(settings, 'LOOKUP_LDAP_SERVERS'):
             for config in settings.LOOKUP_LDAP_SERVERS:
                 validators.append(LDAPValidator(config))
             
-        # Azure AD
+        # Azure AD (slower - network + auth)
         if hasattr(settings, 'LOOKUP_AZURE_AD_CONFIG'):
             validators.append(AzureADValidator(settings.LOOKUP_AZURE_AD_CONFIG))
-            
-        # Text file
-        if hasattr(settings, 'LOOKUP_EMAIL_FILE_CONFIG'):
-            validators.append(TextFileValidator(settings.LOOKUP_EMAIL_FILE_CONFIG))
-
-        # Django User DB
-        if getattr(settings, 'LOOKUP_DJANGO_USERS', True):
-            validators.append(DjangoUserValidator())
 
         return validators
 
     def validate_email(self, email):
         for validator in self.get_validators():
             try:
+                # Early return bei erstem erfolgreichen Match
+                if validator.validate_email(email):
+                    # Bestimme Source-Name für Logging
+                    if isinstance(validator, DjangoUserValidator):
+                        source_name = "Django users"
+                    elif isinstance(validator, TextFileValidator):
+                        source_name = f"File {validator.config['file_path']}"
+                    elif isinstance(validator, LDAPValidator):
+                        source_name = f"LDAP {validator.config['uri']}"
+                    elif isinstance(validator, AzureADValidator):
+                        source_name = "Azure AD"
+                    else:
+                        source_name = "Unknown"
+                    
+                    logger.info(f"Email {email} found in Source: {source_name}")
+                    return True
+                    
+            except Exception as e:
+                # Log the error but continue with next validator
                 if isinstance(validator, DjangoUserValidator):
-                    if validator.validate_email(email):
-                        logger.info(f"Email {email} found in Source: Django users")
-                        return True
+                    source_name = "Django users"
+                elif isinstance(validator, TextFileValidator):
+                    source_name = f"File {validator.config['file_path']}"
                 elif isinstance(validator, LDAPValidator):
-                    if validator.validate_email(email):
-                        logger.info(f"Email {email} found in Source: LDAP {validator.config['uri']}")
-                        return True
-                elif isinstance(validator, TextFileValidator): 
-                    if validator.validate_email(email):
-                        logger.info(f"Email {email} found in Source: File {validator.config['file_path']}")
-                        return True
+                    source_name = f"LDAP {validator.config['uri']}"
                 elif isinstance(validator, AzureADValidator):
-                    if validator.validate_email(email):
-                        logger.info(f"Email {email} found in Source: Azure AD")
-                        return True
-            except Exception:
+                    source_name = "Azure AD"
+                else:
+                    source_name = "Unknown"
+                    
+                logger.warning(f"Email validation source '{source_name}' failed for {email}: {type(e).__name__}: {str(e)}")
                 continue
         return False
