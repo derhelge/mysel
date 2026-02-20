@@ -84,9 +84,9 @@
                                     </button>
                                 </div>
                             </form>
-                            <form method="post" action="{% url 'guests:update' guest.id %}">
+                            <form method="post" action="{% url 'guests:delete' guest.pk %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger" name="action" value="deactivate"
+                                <button type="submit" class="btn btn-outline-danger"
                                         onclick="return confirm('Wollen Sie den Antrag wirklich löschen?')"
                                         aria-label="Antrag löschen">
                                     <i class="fas fa-trash"></i>

@@ -119,16 +119,16 @@ class GuestAccountUpdateView(GuestBaseMixin, UpdateView):
         return redirect(self.success_url)
 
 class GuestAccountDeleteView(GuestBaseMixin, DeleteView):
-    def delete(self, request, *args, **kwargs):
-        guest = self.get_object()
+    def form_valid(self, form):
+        guest = self.object
         guest.delete()
-        messages.success(request, f'Gast-Account {guest.username} wurde gelöscht.')
+        messages.success(self.request, f'Gast-Account {guest.username} wurde gelöscht.')
         return redirect(self.success_url)
 
 class GuestAccountListView(GuestBaseMixin, ListView):
     template_name = 'guests/guest_list.html'
     context_object_name = 'guests'
-            
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         base_queryset = self.get_queryset()
