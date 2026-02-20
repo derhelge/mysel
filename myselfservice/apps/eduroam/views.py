@@ -77,12 +77,15 @@ class EduroamDetail(EduroamBaseMixin, DetailView):
         return redirect('eduroam:list')
     
 class EduroamDelete(EduroamBaseMixin, DeleteView):
-    def delete(self, request, *args, **kwargs):
-        account = self.get_object()
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def form_valid(self, form):
+        account = self.object
         username = account.username
         account.status = EduroamAccount.Status.DELETED
         account.save()
-        messages.success(request, f"Account {username} wurde gelöscht")
+        messages.success(self.request, f"Account {username} wurde gelöscht")
         return redirect(self.success_url)
 
 class EduroamUpdate(EduroamBaseMixin, UpdateView):

@@ -80,8 +80,11 @@ class EventPDFView(EventsBaseMixin, DetailView):
         return response
     
 class EventDeleteView(EventsBaseMixin, DeleteView):
-    def delete(self, request, *args, **kwargs):
-        event = self.get_object()
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def form_valid(self, form):
+        event = self.object
         event.delete()
-        messages.success(request, f'Event {event.name} wurde gelöscht. Alle Zugangsdaten wurden deaktiviert')
+        messages.success(self.request, f'Event {event.name} wurde gelöscht. Alle Zugangsdaten wurden deaktiviert')
         return redirect(self.success_url)

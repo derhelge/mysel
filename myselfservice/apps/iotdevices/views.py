@@ -66,12 +66,15 @@ class IotDeviceDetail(IotDeviceBaseMixin, DetailView):
         return redirect('iotdevices:list')
 
 class IotDeviceDelete(IotDeviceBaseMixin, DeleteView):
-    def delete(self, request, *args, **kwargs):
-        account = self.get_object()
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def form_valid(self, form):
+        account = self.object
         mac_address = account.mac_address
         account.status = IotDeviceAccount.Status.DELETED
         account.save()
-        messages.success(request, f"Account {mac_address} wurde gelöscht")
+        messages.success(self.request, f"Account {mac_address} wurde gelöscht")
         return redirect(self.success_url)
 
 class IotDeviceUpdate(IotDeviceBaseMixin, UpdateView):

@@ -119,6 +119,9 @@ class GuestAccountUpdateView(GuestBaseMixin, UpdateView):
         return redirect(self.success_url)
 
 class GuestAccountDeleteView(GuestBaseMixin, DeleteView):
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
     def form_valid(self, form):
         guest = self.object
         guest.delete()
