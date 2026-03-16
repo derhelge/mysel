@@ -12,7 +12,7 @@ certifi==2026.2.25
     # via requests
 cffi==2.0.0
     # via cryptography
-charset-normalizer==3.4.4
+charset-normalizer==3.4.6
     # via
     #   reportlab
     #   requests
@@ -33,7 +33,7 @@ django==6.0.3
     #   django-allauth
     #   django-crispy-forms
     #   django-friendly-captcha
-django-allauth[socialaccount]==65.14.3
+django-allauth[socialaccount]==65.15.0
     # via -r requirements.in
 django-crispy-forms==2.6
     # via
@@ -67,7 +67,7 @@ pycairo==1.29.0
     # via rlpycairo
 pycparser==3.0
     # via cffi
-pyjwt[crypto]==2.11.0
+pyjwt[crypto]==2.12.1
     # via
     #   django-allauth
     #   msal
@@ -92,7 +92,7 @@ tinycss2==1.5.1
     #   svglib
 urllib3==2.6.3
     # via requests
-uvicorn==0.41.0
+uvicorn==0.42.0
     # via -r requirements.in
 webencodings==0.5.1
     # via
