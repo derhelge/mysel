@@ -75,7 +75,7 @@ reportlab==4.4.10
     # via
     #   -r requirements.in
     #   svglib
-requests==2.32.5
+requests==2.33.0
     # via
     #   django-allauth
     #   django-friendly-captcha
