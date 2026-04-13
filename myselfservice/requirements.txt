@@ -57,7 +57,7 @@ msal==1.35.1
     # via -r requirements.in
 oauthlib==3.3.1
     # via django-allauth
-pillow==12.1.1
+pillow==12.2.0
     # via reportlab
 psycopg2-binary==2.9.11
     # via -r requirements.in
