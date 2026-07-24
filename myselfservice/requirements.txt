@@ -61,7 +61,7 @@ pillow==12.3.0
     #   svglib
 psycopg2-binary==2.9.12
     # via -r requirements.in
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via ldap3
 pycparser==3.0
     # via cffi
