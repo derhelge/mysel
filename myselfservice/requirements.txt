@@ -4,13 +4,13 @@
 #
 #    pip-compile ./requirements.in
 #
-asgiref==3.11.1
+asgiref==3.12.1
     # via
     #   django
     #   django-allauth
-certifi==2026.6.17
+certifi==2026.7.22
     # via requests
-cffi==2.1.0
+cffi==2.1.1
     # via cryptography
 charset-normalizer==3.4.9
     # via
@@ -20,13 +20,13 @@ click==8.4.2
     # via uvicorn
 crispy-bootstrap5==2026.3
     # via -r requirements.in
-cryptography==49.0.0
+cryptography==50.0.0
     # via
     #   msal
     #   pyjwt
 cssselect2==0.9.0
     # via svglib
-django==6.0.7
+django==6.0.8
     # via
     #   -r requirements.in
     #   crispy-bootstrap5
@@ -35,13 +35,13 @@ django==6.0.7
     #   django-friendly-captcha
 django-allauth[socialaccount]==65.18.0
     # via -r requirements.in
-django-crispy-forms==2.6
+django-crispy-forms==2.7
     # via
     #   -r requirements.in
     #   crispy-bootstrap5
 django-environ==0.14.0
     # via -r requirements.in
-django-friendly-captcha==0.1.14
+django-friendly-captcha==0.2.3
     # via -r requirements.in
 h11==0.16.0
     # via uvicorn
@@ -61,7 +61,7 @@ pillow==12.3.0
     #   svglib
 psycopg2-binary==2.9.12
     # via -r requirements.in
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via ldap3
 pycparser==3.0
     # via cffi
@@ -80,7 +80,7 @@ requests==2.34.2
     #   msal
 sqlparse==0.5.5
     # via django
-svglib==2.0.2
+svglib==2.1.0
     # via -r requirements.in
 tinycss2==1.5.1
     # via
@@ -88,7 +88,7 @@ tinycss2==1.5.1
     #   svglib
 urllib3==2.7.0
     # via requests
-uvicorn==0.50.2
+uvicorn==0.52.1
     # via -r requirements.in
 webencodings==0.5.1
     # via
