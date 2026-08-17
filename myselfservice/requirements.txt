@@ -78,7 +78,7 @@ requests==2.34.2
     #   django-allauth
     #   django-friendly-captcha
     #   msal
-sqlparse==0.5.5
+sqlparse==0.6.0
     # via django
 svglib==2.1.0
     # via -r requirements.in
