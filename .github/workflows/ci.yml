@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Zentrale Stelle für die Python-Version der CI.
+# Beim Wechsel auf eine neuere Python-Version hier UND im
+# myselfservice/Dockerfile (FROM python:X.Y-slim) anpassen.
+env:
+  PYTHON_VERSION: "3.14"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Stellt sicher, dass requirements.txt exakt aus requirements.in erzeugt wurde.
+  # Fängt vergessene/inkonsistente pip-compile-Läufe und Dependabot-PRs ab.
+  deps-sync:
+    name: requirements.txt in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install pip-tools
+        run: python -m pip install --upgrade pip pip-tools
+
+      - name: Re-compile requirements.txt
+        working-directory: myselfservice
+        run: pip-compile ./requirements.in
+
+      - name: Fail if requirements.txt is out of sync
+        working-directory: myselfservice
+        run: |
+          if ! git diff --exit-code requirements.txt; then
+            echo "::error file=myselfservice/requirements.txt::requirements.txt ist nicht mit requirements.in synchron. Lokal 'pip-compile ./requirements.in' ausführen und committen."
+            exit 1
+          fi
+
+  # Reproduziert den bestehenden End-to-End-Test: baut den kompletten Dev-Stack
+  # und wertet den Exit-Code des 'tests'-Containers als Gate aus.
+  e2e:
+    name: End-to-end stack test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare .env.dev and LDAP bootstrap
+        working-directory: docker/dev
+        run: ./init.sh
+
+      - name: Build and start stack
+        working-directory: docker/dev
+        run: docker compose -f docker-compose.dev.yml up --build -d
+
+      - name: Wait for tests container and use its exit code
+        working-directory: docker/dev
+        run: |
+          set -euo pipefail
+          exit_code="$(docker wait tests)"
+          echo "tests container exited with code ${exit_code}"
+          exit "${exit_code}"
+
+      - name: Show tests container logs
+        if: always()
+        working-directory: docker/dev
+        run: docker compose -f docker-compose.dev.yml logs tests
+
+      - name: Show full stack logs on failure
+        if: failure()
+        working-directory: docker/dev
+        run: docker compose -f docker-compose.dev.yml logs
+
+      - name: Tear down
+        if: always()
+        working-directory: docker/dev
+        run: docker compose -f docker-compose.dev.yml down --volumes

@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # Python-Abhängigkeiten (pip-compile: requirements.in -> requirements.txt).
+  # Dependabot erkennt den pip-compile-Header und aktualisiert requirements.txt
+  # konsistent zur requirements.in.
+  - package-ecosystem: "pip"
+    directory: "/myselfservice"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      # Alle nicht-sicherheitsrelevanten Updates in EINEM PR bündeln,
+      # damit pip-compile alles gemeinsam auflöst und weniger Rauschen entsteht.
+      python-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Basis-Image im App-Dockerfile (python:X.Y-slim).
+  # Schlägt z. B. python:3.15-slim vor, sobald verfügbar -> siehe Python-Upgrade-Hinweis.
+  - package-ecosystem: "docker"
+    directory: "/myselfservice"
+    schedule:
+      interval: "weekly"
+
+  # Die verwendeten GitHub Actions selbst aktuell halten.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

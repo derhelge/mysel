@@ -71,3 +71,23 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## Hinweis
 Alle Docker Volumes müssen entfernt werden (`docker compose down --volumes`), wenn Konfigurationsänderungen vorgenommen wurden, da sich einige Services sonst nicht korrekt neu initialisieren.
+
+## Continuous Integration
+
+Bei jedem Push und Pull Request auf `main` läuft der Workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) mit zwei Jobs:
+
+- **`deps-sync`**: Führt `pip-compile ./requirements.in` unter der in der CI hinterlegten Python-Version aus und schlägt fehl, wenn `myselfservice/requirements.txt` davon abweicht. So bleibt die kompilierte Requirements-Datei garantiert konsistent zur Quelle.
+- **`e2e`**: Baut den kompletten Dev-Stack (`./init.sh` + `docker compose -f docker-compose.dev.yml up --build`) und verwendet den Exit-Code des `tests`-Containers als Ergebnis. Das entspricht dem oben beschriebenen manuellen Testablauf, nur automatisiert.
+
+### Abhängigkeits-Updates
+
+[Dependabot](.github/dependabot.yml) erstellt wöchentlich Pull Requests für Python-Pakete (`requirements.txt` via pip-compile), das Docker-Basis-Image und die verwendeten GitHub Actions. Der `deps-sync`-Job prüft jeden dieser PRs automatisch mit.
+
+### Python-Version anheben
+
+Die verwendete Python-Version ist an genau zwei Stellen definiert:
+
+1. [`myselfservice/Dockerfile`](myselfservice/Dockerfile) – `FROM python:X.Y-slim`
+2. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) – `env.PYTHON_VERSION`
+
+Zum Wechsel auf eine neuere Version (z. B. wenn die aktuelle aus dem Support fällt): beide Werte auf die neue Version setzen, lokal einmal `pip-compile ./requirements.in` in `myselfservice/` ausführen und die aktualisierte `requirements.txt` committen. Ist die CI grün, ist die neue Version verifiziert.
