@@ -198,6 +198,9 @@ services:
     container_name: tests
     build:
       context: ./tests
+    environment:
+      # Auf 1 setzen, um RADIUS/EAPOL-Tests zu ueberspringen (z. B. in CI ohne privilegiertes Netzwerk).
+      - SKIP_RADIUS_TESTS=${SKIP_RADIUS_TESTS:-0}
     volumes:
       - radius_certs:/radius_certs:ro
     depends_on:

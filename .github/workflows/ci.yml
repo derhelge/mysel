@@ -30,7 +30,10 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install pip-tools
-        run: python -m pip install --upgrade pip pip-tools
+        # Auf die aktuelle pip-tools-Version gepinnt, damit CI und lokale Läufe
+        # deterministisch dasselbe erzeugen. Beim Bump (v8 macht --strip-extras
+        # zum Default) hier erhöhen UND requirements.txt einmal neu committen.
+        run: python -m pip install --upgrade pip "pip-tools==7.6.1"
 
       - name: Re-compile requirements.txt
         working-directory: myselfservice
@@ -59,6 +62,10 @@ jobs:
 
       - name: Build and start stack
         working-directory: docker/dev
+        # RADIUS/EAPOL-Tests brauchen privilegiertes Netzwerk, das GitHub-Runner
+        # nicht bieten -> in CI ueberspringen (lokal laufen sie weiter).
+        env:
+          SKIP_RADIUS_TESTS: "1"
         run: docker compose -f docker-compose.dev.yml up --build -d
 
       - name: Wait for tests container and use its exit code

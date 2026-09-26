@@ -100,6 +100,7 @@ class TestMailLogin(BaseKeycloakTest):
         imap.login(username, password)
         imap.logout()
 
+@pytest.mark.radius
 class TestEduroamAccount(BaseKeycloakTest):
     def setup_method(self):
         self.test_username = "testuser3@example.org"
@@ -140,6 +141,7 @@ class TestEduroamAccount(BaseKeycloakTest):
         os.remove("temp_eapol.conf")
         assert result.returncode == 0
 
+@pytest.mark.radius
 class TestRadiusClientAuth:
     def test_radius_auth(self):
         # Decrypt key first
