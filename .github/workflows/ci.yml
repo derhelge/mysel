@@ -39,11 +39,15 @@ jobs:
         working-directory: myselfservice
         run: pip-compile ./requirements.in
 
-      - name: Fail if requirements.txt is out of sync
+      - name: Fail if requirements.txt pins are out of sync
         working-directory: myselfservice
         run: |
-          if ! git diff --exit-code requirements.txt; then
-            echo "::error file=myselfservice/requirements.txt::requirements.txt ist nicht mit requirements.in synchron. Lokal 'pip-compile ./requirements.in' ausführen und committen."
+          # Nur die Pakete/Versionen vergleichen, Kommentar- und Leerzeilen ignorieren.
+          # Der pip-compile-Header ("by the following command", Python-Version) variiert
+          # je nach pip-Version (z. B. --no-index) und ist fuer die Synchronitaet irrelevant.
+          pins() { grep -vE '^[[:space:]]*(#|$)' "$1"; }
+          if ! diff <(git show "HEAD:myselfservice/requirements.txt" | pins /dev/stdin) <(pins requirements.txt); then
+            echo "::error file=myselfservice/requirements.txt::requirements.txt ist nicht mit requirements.in synchron. Lokal 'pip-compile ./requirements.in' ausfuehren und committen."
             exit 1
           fi
 
