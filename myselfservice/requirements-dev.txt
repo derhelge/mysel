@@ -1,0 +1,5 @@
+# Nur für lokale Entwicklung/Tests - nicht Teil des Produktions-Images.
+# Installation: ./venv/bin/pip install -r requirements-dev.txt
+-r requirements.txt
+pytest
+pytest-django

@@ -1,48 +1,44 @@
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
-from allauth.socialaccount.models import SocialAccount
-from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount, SocialLogin
 
-class KeycloakAuthenticationTest(TestCase):
+from apps.core.adapters import CustomSocialAccountAdapter
+
+User = get_user_model()
+
+class KeycloakPermissionMappingTest(TestCase):
+    """Prüft das Rollen->Permission-Mapping im Adapter ohne echten Keycloak."""
+
     def setUp(self):
-        self.client = Client()
-        self.app_id = 'keycloak'
-        self.test_username = 'testuser1@example.org'
-        self.test_password = 'testuser1'
-        
-    def test_oidc_login_and_permission(self):
-        """Test real OIDC login flow with Keycloak"""
-        
-        # Start des Login-Flows
-        login_url = reverse('openid_connect_login', kwargs={'provider_id': self.app_id})
-        response = self.client.get(login_url)
-        self.assertEqual(response.status_code, 302)
-        
-        # Die Redirect-URL sollte zur Keycloak-Login-Seite führen
-        keycloak_login_url = response['Location']
-        self.assertIn('keycloak:8080', keycloak_login_url)
-        
-        # Simuliere Login bei Keycloak durch direktes POSTen der Credentials
-        # (Dies erfordert, dass die Test-Keycloak-Instanz läuft und der User existiert)
-        response = self.client.post(keycloak_login_url, {
-            'username': self.test_username,
-            'password': self.test_password
-        }, follow=True)
-        
-        # Nach erfolgreichem Login sollte der User in Django existieren
-        user = get_user_model().objects.get(username=self.test_username)
-        self.assertTrue(user.is_active)
-        self.assertTrue(user.has_perm('eduroam_access'))
-        
-        # Überprüfe den Social Account
-        social_account = SocialAccount.objects.get(user=user)
-        self.assertEqual(social_account.provider, 'openid_connect')
-        
-        # Überprüfe ob der User eingeloggt ist
-        self.assertTrue(user.is_authenticated)
+        self.factory = RequestFactory()
+        self.adapter = CustomSocialAccountAdapter()
 
-    def tearDown(self):
-        get_user_model().objects.all().delete()
-        SocialAccount.objects.all().delete()
-        EmailAddress.objects.all().delete()
+    def _sociallogin(self, roles):
+        user = User(username='testuser1@example.org', email='testuser1@example.org')
+        account = SocialAccount(
+            provider='keycloak',
+            uid='keycloak-1',
+            extra_data={
+                'userinfo': {
+                    'email': 'testuser1@example.org',
+                    'given_name': 'Test',
+                    'family_name': 'User',
+                    'resource_access': {'django': {'roles': roles}},
+                }
+            },
+        )
+        return SocialLogin(user=user, account=account)
+
+    def test_mapped_role_grants_permission(self):
+        sociallogin = self._sociallogin(['B_MYSEL_EDUROAM_ACCESS'])
+        self.adapter.pre_social_login(self.factory.get('/'), sociallogin)
+
+        self.assertTrue(
+            sociallogin.user.user_permissions.filter(codename='eduroam_access').exists()
+        )
+
+    def test_unmapped_role_grants_no_permission(self):
+        sociallogin = self._sociallogin(['SOME_UNKNOWN_ROLE'])
+        self.adapter.pre_social_login(self.factory.get('/'), sociallogin)
+
+        self.assertEqual(sociallogin.user.user_permissions.count(), 0)

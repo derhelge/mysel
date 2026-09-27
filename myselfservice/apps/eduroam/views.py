@@ -51,7 +51,7 @@ class EduroamCreate(EduroamBaseMixin, CreateView):
         if '@' in user_username:
             account.realm = user_username.split('@')[1]
         else:
-            account.realm = settings.EDUROAM_SETTINGS['DEFAULT_REALM']
+            account.realm = settings.EDUROAM_SETTINGS['REALM']
 
         account.password = generate_password()
 

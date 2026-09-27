@@ -51,6 +51,30 @@ jobs:
             exit 1
           fi
 
+  # Schnelle Unit/Component-Tests ohne Docker-Stack: In-Memory-SQLite, alle
+  # externen Dienste (LDAP/Keycloak/Captcha/Firewall) gemockt oder deaktiviert
+  # ueber config.settings_test. Gibt schnelles Feedback vor dem langsamen e2e-Job.
+  unit:
+    name: Django unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dev dependencies
+        working-directory: myselfservice
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run unit tests
+        working-directory: myselfservice
+        run: python -m pytest
+
   # Reproduziert den bestehenden End-to-End-Test: baut den kompletten Dev-Stack
   # und wertet den Exit-Code des 'tests'-Containers als Gate aus.
   e2e:

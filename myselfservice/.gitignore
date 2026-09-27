@@ -28,6 +28,7 @@ media/
 #static/
 venv/
 .env
+.pytest_cache/
 
 # import aus legacy anwendung
 import.csv

@@ -69,6 +69,18 @@ class GuestAccountViewTests(TestCase):
         response = self.client.get(reverse('guests:list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'guests/guest_list.html')
+
+    def test_guest_list_displays_active_guest_password(self):
+        guest = GuestAccount.objects.create(
+            name='Visible Guest',
+            username='visible@example.com',
+            owner=self.owner,
+            password='visible-password'
+        )
+
+        response = self.client.get(reverse('guests:list'))
+
+        self.assertContains(response, guest.password)
         
     def test_guest_create_view(self):
         data = {
@@ -83,7 +95,8 @@ class GuestAccountViewTests(TestCase):
 
     @override_settings(FRC_CAPTCHA_MOCKED_VALUE=True)
     def test_guest_application_process(self):
-        # Test guest application and approval process
+        # applicate ist das oeffentliche Formular - eingeloggte User werden umgeleitet
+        self.client.logout()
         data = {
             'name': 'Applicant Guest',
             'username': 'applicant@example.com',
@@ -283,17 +296,21 @@ class GuestFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('owner_email', form.errors)
 
+    @override_settings(FRC_CAPTCHA_MOCKED_VALUE=True)
     def test_duration_validation(self):
         """Test Validierung der Zugangsdauer"""
+        self.client.logout()
         data = {
             'name': 'Test Guest',
             'username': 'newguest@example.com',
+            'owner_email': self.owner.email,
             'duration': 999,  # Ungültige Dauer
-            'message': 'Test message'
+            'message': 'Test message',
+            'captcha': 'mocked_captcha_key',
         }
         response = self.client.post(reverse('guests:applicate'), data)
         self.assertEqual(response.status_code, 200)  # Bleibt auf der Formularseite
-        self.assertContains(response, 'error')
+        self.assertIn('duration', response.context['form'].errors)
 
 class GuestAccountCleanupAndPrivacyTests(TestCase):
     def setUp(self):
@@ -384,22 +401,25 @@ class GuestAccountSecurityTests(TestCase):
         self.assertEqual(response.status_code, 403)
         
     def test_captcha_security(self):
-        """Test Captcha-Sicherheit"""
+        """Test Captcha-Sicherheit: fehlgeschlagene Verifizierung lehnt das Formular ab."""
+        from unittest.mock import patch
+        from django.core.exceptions import ValidationError
         from apps.guests.forms import GuestApplicationForm
-        
-        form = GuestApplicationForm()
- 
+
         data = {
             'name': 'Test Guest',
             'username': 'newguest@example.com',
             'owner_email': self.owner.email,
             'message': 'Test message',
             'duration': 7,
-
         }
-        
-        form = GuestApplicationForm(data=data)
-        self.assertFalse(form.is_valid())
+        with patch(
+            'friendly_captcha.fields.FrcCaptchaField.clean',
+            side_effect=ValidationError('captcha verification failed'),
+        ):
+            form = GuestApplicationForm(data=data)
+            self.assertFalse(form.is_valid())
+            self.assertIn('captcha', form.errors)
 
 class GuestAccountIntegrationTests(TestCase):
 
@@ -420,7 +440,8 @@ class GuestAccountIntegrationTests(TestCase):
     def test_complete_guest_lifecycle(self):
 
         """Test vollständiger Lebenszyklus eines Gast-Accounts"""
-        # 1. Erstelle Antrag
+        # 1. Erstelle Antrag ueber das oeffentliche, anonyme Formular
+        self.client.logout()
         response = self.client.post(reverse('guests:applicate'), {
             'name': 'Integration Test',
             'username': 'integration@example.com', 
@@ -433,12 +454,11 @@ class GuestAccountIntegrationTests(TestCase):
         # Prüfe ob Gast erstellt wurde
         guest = GuestAccount.objects.get(username='integration@example.com')
         self.assertIsNotNone(guest.created_at)
-        print(f"guest.pk: {guest.pk}, guest.owner: {guest.owner}, guest.temp_owner_email: {guest.temp_owner_email}")
-        # 2. Genehmige Antrag
+        # 2. Genehmige Antrag als eingeloggter Gastgeber
+        self.client.login(username='testowner', password='testpass123')
         response = self.client.get(
             reverse('guests:approve', kwargs={'pk': guest.pk})
         )
-        print(response.content) 
         guest.refresh_from_db()
         self.assertTrue(guest.is_active)
         
