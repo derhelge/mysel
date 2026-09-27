@@ -126,17 +126,14 @@
                         <div class="text-muted small mt-1">
                             <i class="fas fa-hourglass-end me-1"></i> Läuft ab: {{ guest.end_date|date:"d.m.Y" }}
                         </div>
-                        <div class="input-group input-group-sm mt-2">
-                            <span class="input-group-text"><i class="fas fa-key" aria-hidden="true"></i><span class="visually-hidden">Passwort</span></span>
-                            <input type="text" class="form-control font-monospace" id="guest-password-{{ guest.id }}" value="{{ guest.password }}" readonly aria-label="Passwort für {{ guest.name }}">
-                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('guest-password-{{ guest.id }}')" aria-label="Passwort kopieren" title="Passwort kopieren">
-                                <i class="fas fa-copy" aria-hidden="true"></i>
-                            </button>
-                        </div>
                     </div>
                     <div class="col-12 col-md-6 mt-3 mt-md-0">
                         <div class="d-flex gap-2 justify-content-md-end">
                             <div class="d-flex flex-column flex-xl-row gap-2">
+                                <a href="{% url 'guests:detail' guest.pk %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span>Account anzeigen</span>
+                                </a>
                                 <form method="post" action="{% url 'guests:update' guest.id %}">
                                     {% csrf_token %}
                                     <div class="input-group">
@@ -268,7 +265,7 @@
                         </button>
                     </div>
                 </div>
-                Teilen Sie diese Zugangsdaten jetzt mit Ihrem Gast, damit dieser sich im WLAN <strong>THGA</strong> anmelden kann. Die Zugangsdaten werden aus Sicherheitsgründen nur einmalig angezeigt. Ihr Gast erhält diese Daten auch per E-Mail, sofern Sie eine gültige E-Mail-Adresse angegeben haben.
+                Teilen Sie diese Zugangsdaten jetzt mit Ihrem Gast, damit dieser sich im WLAN <strong>THGA</strong> anmelden kann. Ihr Gast erhält diese Daten auch per E-Mail, sofern Sie eine gültige E-Mail-Adresse angegeben haben.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>

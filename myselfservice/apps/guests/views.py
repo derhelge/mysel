@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, CreateView, DeleteView, DetailView, UpdateView
 
 from apps.guests.utils import send_guest_notification, send_owner_notification
 from .models import GuestAccount
@@ -116,6 +116,12 @@ class GuestAccountUpdateView(GuestBaseMixin, UpdateView):
         except Exception as e:
             messages.error(self.request, e)
 
+        return redirect(self.success_url)
+
+class GuestAccountDetailView(GuestBaseMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        guest = self.get_object()
+        messages.info(request, f"{guest.username}|{guest.password}", extra_tags='credentials')
         return redirect(self.success_url)
 
 class GuestAccountDeleteView(GuestBaseMixin, DeleteView):
