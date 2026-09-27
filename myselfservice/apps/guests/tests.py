@@ -70,7 +70,7 @@ class GuestAccountViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'guests/guest_list.html')
 
-    def test_guest_list_displays_active_guest_password(self):
+    def test_guest_detail_shows_credentials(self):
         guest = GuestAccount.objects.create(
             name='Visible Guest',
             username='visible@example.com',
@@ -78,8 +78,9 @@ class GuestAccountViewTests(TestCase):
             password='visible-password'
         )
 
-        response = self.client.get(reverse('guests:list'))
+        response = self.client.get(reverse('guests:detail', args=[guest.pk]), follow=True)
 
+        self.assertContains(response, guest.username)
         self.assertContains(response, guest.password)
         
     def test_guest_create_view(self):
