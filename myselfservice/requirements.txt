@@ -26,7 +26,7 @@ cryptography==50.0.1
     #   pyjwt
 cssselect2==0.10.1
     # via svglib
-django==6.1.1
+django==6.1.2
     # via
     #   -r requirements.in
     #   crispy-bootstrap5
@@ -80,7 +80,7 @@ requests==2.34.2
     #   msal
 sqlparse==0.6.0
     # via django
-svglib==2.2.0
+svglib==2.3.0
     # via -r requirements.in
 tinycss2==1.5.1
     # via
