@@ -33,7 +33,7 @@ django==6.1.2
     #   django-allauth
     #   django-crispy-forms
     #   django-friendly-captcha
-django-allauth[socialaccount]==65.19.7
+django-allauth[socialaccount]==65.20.0
     # via -r requirements.in
 django-crispy-forms==2.7
     # via
