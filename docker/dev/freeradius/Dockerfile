@@ -1,6 +1,6 @@
 FROM freeradius/freeradius-server:latest
 RUN apt-get update && \
-    apt-get install -y netcat && \
+    apt-get install -y netcat-openbsd && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
