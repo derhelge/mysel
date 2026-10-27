@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 # Zentrale Stelle für die Python-Version der CI.
 # Beim Wechsel auf eine neuere Python-Version hier UND im
 # myselfservice/Dockerfile (FROM python:X.Y-slim) anpassen.
