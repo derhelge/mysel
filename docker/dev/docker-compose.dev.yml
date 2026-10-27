@@ -12,9 +12,9 @@ services:
     networks:
       - mailnet
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'nc -u -z localhost 1812'"]
+      test: ["CMD", "nc", "-4", "-n", "-u", "-z", "-w", "1", "127.0.0.1", "1812"]
       interval: 10s
-      timeout: 1s
+      timeout: 3s
       retries: 5
     ports:
       - "1812-1813:1812-1813/udp"
