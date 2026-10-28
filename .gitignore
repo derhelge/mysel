@@ -34,8 +34,8 @@ db.sqlite3
 
 
 # Static files
-/staticfiles/*
-!/staticfiles/.gitkeep
+/myselfservice/staticfiles/*
+!/myselfservice/staticfiles/.gitkeep
 
 # Environment
 .env
