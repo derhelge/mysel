@@ -72,6 +72,22 @@ docker compose -f docker-compose.dev.yml up --build
 ## Hinweis
 Alle Docker Volumes müssen entfernt werden (`docker compose down --volumes`), wenn Konfigurationsänderungen vorgenommen wurden, da sich einige Services sonst nicht korrekt neu initialisieren.
 
+## Konfiguration
+
+Die Grundkonfiguration steht in [`docker/dev/env.example`](docker/dev/env.example). Folgende optionale Umgebungsvariablen passen das Verhalten an die eigene Umgebung an; ohne Eintrag gelten die Werte für den Dev-Stack:
+
+| Variable | Default | Bedeutung |
+|---|---|---|
+| `EMAIL_BACKEND` | Console-Backend | Mail-Backend, z. B. `django.core.mail.backends.smtp.EmailBackend` |
+| `EMAIL_HOST` | `localhost` | Mailserver für das SMTP-Backend |
+| `DEFAULT_FROM_EMAIL` | `noreply@example.com` | Absenderadresse |
+| `LDAP_LOOKUP_BASE_DN` | `dc=example,dc=org` | Suchbasis für die Prüfung von Gastgeber-Adressen |
+| `LDAP_MAIL_LOGIN_MODE` | `attribute` | Wie der LDAP-Mail-Login nach dem Anlegen eines Geräte-Passworts gesperrt wird: `attribute` setzt `mailLoginByLdap`, `group` nimmt den Benutzer in `LDAP_MAIL_LOGIN_DISABLED_GROUP` auf |
+| `LDAP_MAIL_GROUP_BASE_DN` | `ou=groups,dc=example,dc=org` | Suchbasis der Sperrgruppe (Modus `group`) |
+| `LDAP_MAIL_LOGIN_DISABLED_GROUP` | `B_MAIL_LOGIN_N` | Name der Sperrgruppe (Modus `group`) |
+
+Im Modus `group` muss der Mailserver Mitglieder dieser Gruppe von der LDAP-Anmeldung ausschließen.
+
 ## Lokale Tests (Unit/Component)
 
 Neben den Docker-basierten End-to-End-Tests gibt es schnelle Unit-Tests, die **ohne Docker** direkt in einem lokalen venv laufen. Sie nutzen In-Memory-SQLite und mocken bzw. deaktivieren alle externen Dienste (LDAP, Keycloak, Captcha, Firewall) über das Settings-Modul [`config.settings_test`](myselfservice/config/settings_test.py). Damit funktionieren VS Code Test Explorer, Debugger und Copilot-Checkpoints direkt auf dem Quellcode.
@@ -114,3 +130,18 @@ Die verwendete Python-Version ist an genau drei Stellen definiert:
 3. [`myselfservice/.python-version`](myselfservice/.python-version) – lokales venv (Unit-Tests)
 
 Zum Wechsel auf eine neuere Version (z. B. wenn die aktuelle aus dem Support fällt): alle drei Werte auf die neue Version setzen, das lokale venv neu anlegen, lokal einmal `pip-compile ./requirements.in` in `myselfservice/` ausführen und die aktualisierte `requirements.txt` committen. Ist die CI grün, ist die neue Version verifiziert.
+
+## Branch-Modell für eigene Deployments
+
+`main` ist der Open-Source-Stand. Hierhin gehören alle allgemein nützlichen Änderungen, auch die Dependabot-Updates. CI und Dependabot laufen ausschließlich auf `main`.
+
+Für einen eigenen Betrieb empfiehlt sich ein privates Repository mit Umgebungs-Branches, die `main` nur per Merge übernehmen:
+
+```
+main (öffentlich) ──merge──▶ staging (privat) ──merge──▶ prod (privat)
+```
+
+- Änderungen fließen nur in diese Richtung, per `git merge` und ohne Cherry-Picks. So bleibt die gemeinsame Historie erhalten, und spätere Merges bleiben konfliktarm.
+- Umgebungsspezifisches wie Hosts, LDAP-Suchbasen oder Mailserver wird über die Umgebungsvariablen aus [Konfiguration](#konfiguration) in der jeweiligen `.env` gesetzt, nicht durch Codeänderungen.
+- Allgemein nützliche Fixes aus einem Umgebungs-Branch werden gezielt nach `main` übernommen, nie durch einen pauschalen Rück-Merge.
+- Da die Umgebungs-Branches keine eigene CI haben, vor jedem Push die Unit-Tests (siehe [Lokale Tests](#lokale-tests-unitcomponent)) lokal ausführen.

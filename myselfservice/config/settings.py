@@ -229,8 +229,9 @@ LOGGING = {
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Für Entwicklung
-DEFAULT_FROM_EMAIL = 'noreply@example.com'
+EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = env('EMAIL_HOST', default='localhost')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 
 
 LOGIN_URL = f'/accounts/oidc/{SSO_PROVIDER}/login/'
@@ -254,7 +255,7 @@ LOOKUP_LDAP_SERVERS = [
         'uri': env('LDAP_MAIL_SERVER_URI'),
         'bind_dn': env('LDAP_MAIL_BIND_DN'),
         'bind_pw': env('LDAP_MAIL_BIND_PASSWORD'),
-        'base_dn': 'dc=example,dc=org',
+        'base_dn': env('LDAP_LOOKUP_BASE_DN', default='dc=example,dc=org'),
         'filter': '(mail={email})',
         'mail_attr': 'mail'
     },
@@ -315,6 +316,10 @@ LDAP_MAIL_LOGIN_CONFIG = {
     'BIND_DN': env('LDAP_MAIL_BIND_DN'),
     'BIND_PASSWORD': env('LDAP_MAIL_BIND_PASSWORD'),
     'USER_BASE_DN': env('LDAP_MAIL_USER_BASE_DN'),
+    'GROUP_BASE_DN': env('LDAP_MAIL_GROUP_BASE_DN', default='ou=groups,dc=example,dc=org'),
+    'MAIL_LOGIN_DISABLED_GROUP': env('LDAP_MAIL_LOGIN_DISABLED_GROUP', default='B_MAIL_LOGIN_N'),
+    # 'attribute': Sperre über mailLoginByLdap, 'group': über Mitgliedschaft in MAIL_LOGIN_DISABLED_GROUP
+    'MODE': env('LDAP_MAIL_LOGIN_MODE', default='attribute'),
 }
 
 FIREWALL_API_KEY= env('FIREWALL_API_KEY', default='')
